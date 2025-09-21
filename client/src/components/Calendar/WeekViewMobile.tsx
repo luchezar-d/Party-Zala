@@ -88,7 +88,8 @@ export default function WeekViewMobile() {
   return (
     <div className="space-y-3">
       {/* Week Navigation */}
-      <div className="flex items-center gap-3">
+      <div className="relative flex items-center justify-between">
+        {/* Left - Previous button */}
         <button 
           onClick={() => setCursor(addWeeks(cursor, -1))}
           className="h-10 w-10 rounded-full bg-app-card border border-app-border shadow-sm grid place-items-center active:scale-95 transition"
@@ -96,25 +97,29 @@ export default function WeekViewMobile() {
           <ChevronLeft className="h-5 w-5" />
         </button>
         
-        <div className="flex-1">
-          <div className="font-semibold text-app-text-primary">
+        {/* Center - Week range (absolutely centered) */}
+        <div className="absolute left-1/2 transform -translate-x-1/2">
+          <div className="font-semibold text-app-text-primary whitespace-nowrap">
             {format(weekStart, "MMM d")} – {format(weekEnd, "MMM d, yyyy")}
           </div>
         </div>
         
-        <button 
-          onClick={() => setCursor(new Date())}
-          className="px-3 py-1.5 rounded-full bg-app-card border border-app-border text-sm font-medium active:scale-95 transition"
-        >
-          Today
-        </button>
-        
-        <button 
-          onClick={() => setCursor(addWeeks(cursor, 1))}
-          className="h-10 w-10 rounded-full bg-app-card border border-app-border shadow-sm grid place-items-center active:scale-95 transition"
-        >
-          <ChevronRight className="h-5 w-5" />
-        </button>
+        {/* Right - Today and Next buttons */}
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setCursor(new Date())}
+            className="px-3 py-1.5 rounded-full bg-app-card border border-app-border text-sm font-medium active:scale-95 transition"
+          >
+            Today
+          </button>
+          
+          <button 
+            onClick={() => setCursor(addWeeks(cursor, 1))}
+            className="h-10 w-10 rounded-full bg-app-card border border-app-border shadow-sm grid place-items-center active:scale-95 transition"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
       {/* Day Cards */}

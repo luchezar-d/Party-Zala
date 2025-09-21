@@ -76,23 +76,30 @@ export function MonthView({ currentDate, onPreviousMonth, onNextMonth, onToday, 
 
   return (
     <section className="space-y-6">
-      <div className="flex items-center gap-3">
+      <div className="relative flex items-center justify-between">
+        {/* Left side - Previous button */}
         <button 
           onClick={onPreviousMonth}
           className="p-2 rounded-lg border border-app-border bg-app-card backdrop-blur shadow-sm hover:shadow-md hover:-translate-y-[1px] transition"
         >
           <ChevronLeft className="size-4" />
         </button>
-        <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-app-text-primary">
-          {format(currentDate, "LLLL yyyy")}
-        </h2>
-        <button 
-          onClick={onNextMonth}
-          className="p-2 rounded-lg border border-app-border bg-app-card backdrop-blur shadow-sm hover:shadow-md hover:-translate-y-[1px] transition"
-        >
-          <ChevronRight className="size-4" />
-        </button>
-        <div className="ml-auto">
+        
+        {/* Center - Month title (absolutely centered) */}
+        <div className="absolute left-1/2 transform -translate-x-1/2">
+          <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-app-text-primary whitespace-nowrap">
+            {format(currentDate, "LLLL yyyy")}
+          </h2>
+        </div>
+        
+        {/* Right side - Next button and Today button */}
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={onNextMonth}
+            className="p-2 rounded-lg border border-app-border bg-app-card backdrop-blur shadow-sm hover:shadow-md hover:-translate-y-[1px] transition"
+          >
+            <ChevronRight className="size-4" />
+          </button>
           <button 
             onClick={onToday}
             className="px-4 py-2 rounded-lg border border-app-border bg-app-card backdrop-blur shadow-sm hover:shadow-md hover:-translate-y-[1px] transition text-sm font-medium"
