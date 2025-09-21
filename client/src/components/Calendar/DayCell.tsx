@@ -1,64 +1,76 @@
-import type { CalendarDay } from '../../lib/date';
-import { clsx } from 'clsx';
+import { clsx } from "clsx";
+import { format, isToday, isWeekend } from "date-fns";
+import { CalendarClock } from "lucide-react";
+import type { Party } from "./MonthView";
+import { bracketForAge } from "../../lib/ageColors";
 
 interface DayCellProps {
-  day: CalendarDay;
-  onClick: () => void;
+  date: Date;
+  isOtherMonth?: boolean;
+  parties: Party[];
+  onClick: (date: Date, parties: Party[]) => void;
 }
 
-export function DayCell({ day, onClick }: DayCellProps) {
+export function DayCell({ date, isOtherMonth, parties, onClick }: DayCellProps) {
+  const maxVisible = 3;
+  const extra = Math.max(0, parties.length - maxVisible);
+
   return (
-    <button
-      onClick={onClick}
-      className={clsx(
-        'calendar-day min-h-[80px] relative',
-        {
-          'calendar-day-selected': day.isSelected,
-          'calendar-day-other-month': !day.isCurrentMonth,
-          'bg-accent-50 border-2 border-accent-200': day.isToday && day.isCurrentMonth,
-          'cursor-default': !day.isCurrentMonth,
-        }
-      )}
-      disabled={!day.isCurrentMonth}
-    >
-      {/* Day Number */}
-      <span
+    <>
+      <button
+        onClick={() => onClick(date, parties)}
         className={clsx(
-          'text-sm font-medium',
-          {
-            'text-accent-900': day.isToday && day.isCurrentMonth,
-            'text-primary-900': day.isSelected,
-            'text-gray-900': day.isCurrentMonth && !day.isToday,
-            'text-gray-400': !day.isCurrentMonth,
-          }
+          "group relative flex flex-col items-stretch rounded-2xl border border-app-border bg-app-card backdrop-blur px-3 py-3 text-left shadow-sm transition min-h-[120px]",
+          "hover:shadow-md hover:-translate-y-[1px]",
+          isToday(date) && "ring-2 ring-pastel-sky-300",
+          isWeekend(date) && "bg-pastel-lavender-50/40",
+          isOtherMonth && "opacity-50"
         )}
       >
-        {day.dayNumber}
-      </span>
-
-      {/* Party Count Badge */}
-      {day.partyCount > 0 && (
-        <div className="absolute bottom-1 right-1">
-          <span
-            className={clsx(
-              'party-badge text-xs',
-              {
-                'bg-primary-100 text-primary-800': day.isCurrentMonth,
-                'bg-gray-100 text-gray-600': !day.isCurrentMonth,
-              }
-            )}
-          >
-            {day.partyCount} {day.partyCount === 1 ? 'party' : 'parties'}
+        {/* Date number */}
+        <div className="flex items-center justify-between">
+          <span className={clsx("text-sm font-medium", isToday(date) ? "text-pastel-sky-700" : "text-app-text-primary")}>
+            {format(date, "d")}
           </span>
+          {/* Badge with count */}
+          {parties.length > 0 && (
+            <span className="inline-flex items-center rounded-full bg-app-border px-2 py-1 text-xs font-medium text-app-text-secondary ring-1 ring-inset ring-app-border">
+              {parties.length}
+            </span>
+          )}
         </div>
-      )}
 
-      {/* Today Indicator */}
-      {day.isToday && day.isCurrentMonth && (
-        <div className="absolute top-1 left-1">
-          <div className="w-2 h-2 bg-accent-500 rounded-full"></div>
+        {/* Event chips */}
+        <div className="mt-2 space-y-1.5">
+          {parties.slice(0, maxVisible).map((p) => {
+            const bracket = bracketForAge(p.kidAge);
+            return (
+              <div
+                key={p._id}
+                className={clsx(
+                  "flex items-center gap-1.5 truncate rounded-xl px-2 py-1 text-xs ring-1",
+                  bracket.chip
+                )}
+              >
+                <CalendarClock className="size-3 shrink-0" />
+                <span className="truncate">
+                  {(p.startTime ?? "—")} · {p.kidName}
+                </span>
+              </div>
+            );
+          })}
+          {extra > 0 && (
+            <div className="text-[11px] text-app-text-secondary">
+              +{extra} more
+            </div>
+          )}
         </div>
-      )}
-    </button>
+
+        {/* Hover glow */}
+        <div className="pointer-events-none absolute inset-0 rounded-2xl ring-0 transition group-hover:ring-2 group-hover:ring-pastel-blush-200/60" />
+      </button>
+
+
+    </>
   );
 }

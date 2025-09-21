@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import { DayCell } from './DayCell';
-import { PartyModal } from './PartyModal';
-import { generateCalendarDays, getMonthDateRange, formatDateForAPI } from '../../lib/date';
-import type { CalendarDay } from '../../lib/date';
+import { eachDayOfInterval, endOfMonth, endOfWeek, format, isSameMonth, startOfMonth, startOfWeek } from "date-fns";
+import { useEffect, useMemo, useState } from "react";
+import { groupByDay, dayKey } from "../../lib/date";
+import { DayCell } from "./DayCell.tsx";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { api } from '../../lib/api';
 import { toast } from 'sonner';
 
-interface Party {
+export interface Party {
   _id: string;
   partyDate: string;
   kidName: string;
@@ -19,126 +19,121 @@ interface Party {
   parentEmail?: string;
   guestsCount?: number;
   notes?: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface MonthViewProps {
   currentDate: Date;
+  onPreviousMonth: () => void;
+  onNextMonth: () => void;
+  onToday: () => void;
+  onDayClick: (date: Date, parties: Party[]) => void;
 }
 
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+export function MonthView({ currentDate, onPreviousMonth, onNextMonth, onToday, onDayClick }: MonthViewProps) {
+  const monthStart = startOfMonth(currentDate);
+  const monthEnd = endOfMonth(currentDate);
+  const gridStart = startOfWeek(monthStart, { weekStartsOn: 0 });
+  const gridEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
 
-export function MonthView({ currentDate }: MonthViewProps) {
   const [parties, setParties] = useState<Party[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
 
-  // Fetch parties for the current month
   useEffect(() => {
+    const fetchParties = async () => {
+      setLoading(true);
+      try {
+        const from = format(gridStart, 'yyyy-MM-dd');
+        const to = format(gridEnd, 'yyyy-MM-dd');
+        const response = await api.get(`/parties?from=${from}&to=${to}`);
+        setParties(response.data);
+      } catch (error) {
+        console.error('Error fetching parties:', error);
+        toast.error('Failed to load parties');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchParties();
-  }, [currentDate]);
+  }, [gridStart.toISOString(), gridEnd.toISOString()]);
 
-  const fetchParties = async () => {
-    setLoading(true);
-    try {
-      const { from, to } = getMonthDateRange(currentDate);
-      const response = await api.get(`/parties?from=${from}&to=${to}`);
-      setParties(response.data);
-    } catch (error) {
-      console.error('Failed to fetch parties:', error);
-      toast.error('Failed to load parties');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const byDay = useMemo(() => groupByDay(parties), [parties]);
+  const days = useMemo(
+    () => eachDayOfInterval({ start: gridStart, end: gridEnd }),
+    [gridStart.toISOString(), gridEnd.toISOString()]
+  );
 
-  const handleDayClick = (day: CalendarDay) => {
-    if (!day.isCurrentMonth) return;
-    
-    setSelectedDate(day.date);
-    setModalOpen(true);
-  };
-
-  const handlePartyCreated = () => {
-    fetchParties(); // Refresh parties after creating one
-    toast.success('Party created successfully! 🎉');
-  };
-
-  const handlePartyDeleted = () => {
-    fetchParties(); // Refresh parties after deleting one
-    toast.success('Party deleted successfully');
-  };
-
-  const handleModalClose = () => {
-    setModalOpen(false);
-    setSelectedDate(null);
-  };
-
-  // Get party dates for the calendar
-  const partyDates = parties.map(party => party.partyDate);
-
-  // Generate calendar days
-  const calendarDays = generateCalendarDays(currentDate, selectedDate || undefined, partyDates);
-
-  // Get parties for selected date
-  const selectedDateParties = selectedDate
-    ? parties.filter(party => party.partyDate === formatDateForAPI(selectedDate))
-    : [];
+  if (loading) {
+    return (
+      <div className="rounded-3xl border border-app-border bg-app-card backdrop-blur shadow-sm p-8 text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pastel-sky-600 mx-auto"></div>
+        <p className="mt-4 text-app-text-secondary">Loading calendar...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="card p-6">
-      {loading && (
-        <div className="absolute top-4 right-4">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary-600"></div>
-        </div>
-      )}
-
-      {/* Weekday Headers */}
-      <div className="grid grid-cols-7 gap-1 mb-4">
-        {WEEKDAYS.map((day) => (
-          <div
-            key={day}
-            className="p-3 text-center text-sm font-semibold text-gray-500 uppercase tracking-wide"
+    <section className="space-y-6">
+      <div className="flex items-center gap-3">
+        <button 
+          onClick={onPreviousMonth}
+          className="p-2 rounded-lg border border-app-border bg-app-card backdrop-blur shadow-sm hover:shadow-md hover:-translate-y-[1px] transition"
+        >
+          <ChevronLeft className="size-4" />
+        </button>
+        <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-app-text-primary">
+          {format(currentDate, "LLLL yyyy")}
+        </h2>
+        <button 
+          onClick={onNextMonth}
+          className="p-2 rounded-lg border border-app-border bg-app-card backdrop-blur shadow-sm hover:shadow-md hover:-translate-y-[1px] transition"
+        >
+          <ChevronRight className="size-4" />
+        </button>
+        <div className="ml-auto">
+          <button 
+            onClick={onToday}
+            className="px-4 py-2 rounded-lg border border-app-border bg-app-card backdrop-blur shadow-sm hover:shadow-md hover:-translate-y-[1px] transition text-sm font-medium"
           >
-            {day}
-          </div>
-        ))}
+            Today
+          </button>
+        </div>
       </div>
 
-      {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-1">
-        {calendarDays.map((day, index) => (
-          <DayCell
-            key={index}
-            day={day}
-            onClick={() => handleDayClick(day)}
-          />
-        ))}
+      <div className="rounded-3xl border border-app-border bg-app-card backdrop-blur shadow-sm overflow-hidden">
+        {/* Weekday headings */}
+        <div className="grid grid-cols-7 gap-px bg-gradient-to-r from-transparent via-app-border to-transparent">
+          {["SUN","MON","TUE","WED","THU","FRI","SAT"].map(d => (
+            <div key={d} className="py-3 text-center text-xs font-medium tracking-wide text-app-text-secondary">{d}</div>
+          ))}
+        </div>
+
+        {/* Days */}
+        <div className="grid grid-cols-7 gap-4 p-8">
+          {days.map((date) => (
+            <DayCell
+              key={date.toISOString()}
+              date={date}
+              isOtherMonth={!isSameMonth(date, currentDate)}
+              parties={byDay[dayKey(date)] ?? []}
+              onClick={onDayClick}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Empty State */}
       {!loading && parties.length === 0 && (
         <div className="text-center py-12">
           <div className="text-6xl mb-4">🎉</div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No parties yet!</h3>
-          <p className="text-gray-600 mb-4">
+          <h3 className="text-lg font-medium text-app-text-primary mb-2">No parties yet!</h3>
+          <p className="text-app-text-secondary mb-4">
             Click on any day to schedule your first kids' party.
           </p>
         </div>
       )}
-
-      {/* Party Modal */}
-      {modalOpen && selectedDate && (
-        <PartyModal
-          date={selectedDate}
-          parties={selectedDateParties}
-          onClose={handleModalClose}
-          onPartyCreated={handlePartyCreated}
-          onPartyDeleted={handlePartyDeleted}
-        />
-      )}
-    </div>
+    </section>
   );
 }

@@ -11,7 +11,8 @@ import {
   subMonths,
   isToday,
   parseISO,
-  formatISO
+  formatISO,
+  startOfDay
 } from 'date-fns';
 
 export interface CalendarDay {
@@ -91,4 +92,16 @@ export function formatTime(time: string): string {
   const ampm = hour24 >= 12 ? 'PM' : 'AM';
   
   return `${hour12}:${minutes} ${ampm}`;
+}
+
+export function dayKey(d: Date | string) {
+  return format(new Date(d), "yyyy-MM-dd");
+}
+
+export function groupByDay(parties: any[]) {
+  return parties.reduce<Record<string, any[]>>((acc, p) => {
+    const key = dayKey(startOfDay(new Date(p.partyDate)));
+    (acc[key] ??= []).push(p);
+    return acc;
+  }, {});
 }

@@ -7,6 +7,7 @@ import { X, Plus, Clock, MapPin, Users, Mail, User, Trash2, Calendar, Baby } fro
 import { api } from '../../lib/api';
 import { formatDateForAPI, formatTime } from '../../lib/date';
 import { toast } from 'sonner';
+import { bracketForAge } from '../../lib/ageColors';
 
 interface Party {
   _id: string;
@@ -105,39 +106,42 @@ export function PartyModal({ date, parties, onClose, onPartyCreated, onPartyDele
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-medium max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-md max-h-[85vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
-          <div className="flex items-center space-x-3">
-            <div className="bg-primary-100 p-2 rounded-xl">
-              <Calendar className="h-5 w-5 text-primary-600" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">
-                {format(date, 'EEEE, MMMM d, yyyy')}
-              </h2>
-              <p className="text-sm text-gray-600">
-                {parties.length} {parties.length === 1 ? 'party' : 'parties'} scheduled
-              </p>
-            </div>
-          </div>
+        <div className="relative p-4 border-b border-gray-100">
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            className="absolute top-3 right-3 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors z-10"
           >
             <X className="h-5 w-5" />
           </button>
+          
+          <div className="pr-10">
+            <div className="flex items-center space-x-2 mb-1">
+              <div className="bg-primary-100 p-1.5 rounded-lg">
+                <Calendar className="h-4 w-4 text-primary-600" />
+              </div>
+              <h2 className="text-lg font-bold text-gray-900">
+                {format(date, 'MMM d, yyyy')}
+              </h2>
+            </div>
+            <p className="text-sm text-gray-600 ml-7">
+              {parties.length} {parties.length === 1 ? 'party' : 'parties'} scheduled
+            </p>
+          </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-4">
           {/* Existing Parties */}
           {parties.length > 0 && (
             <div className="mb-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Scheduled Parties</h3>
-              <div className="space-y-4">
-                {parties.map((party) => (
-                  <div key={party._id} className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl p-4 border border-pink-100">
+              <div className="space-y-3">
+                {parties.map((party) => {
+                  const bracket = bracketForAge(party.kidAge);
+                  return (
+                  <div key={party._id} className={`rounded-lg p-3 border ${bracket.block}`}>
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-2">
@@ -211,7 +215,8 @@ export function PartyModal({ date, parties, onClose, onPartyCreated, onPartyDele
                       </button>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
@@ -220,17 +225,17 @@ export function PartyModal({ date, parties, onClose, onPartyCreated, onPartyDele
           {!showForm ? (
             <button
               onClick={() => setShowForm(true)}
-              className="w-full flex items-center justify-center space-x-2 p-4 border-2 border-dashed border-primary-300 text-primary-600 hover:border-primary-400 hover:text-primary-700 rounded-xl transition-colors"
+              className="w-full flex items-center justify-center space-x-2 p-3 border-2 border-dashed border-primary-300 text-primary-600 hover:border-primary-400 hover:text-primary-700 rounded-lg transition-colors"
             >
-              <Plus className="h-5 w-5" />
+              <Plus className="h-4 w-4" />
               <span className="font-medium">Add New Party</span>
             </button>
           ) : (
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Create New Party</h3>
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-100">
+              <h3 className="text-base font-semibold text-gray-900 mb-3">Create New Party</h3>
               
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+                <div className="grid grid-cols-1 gap-3">
                   {/* Kid Name */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
