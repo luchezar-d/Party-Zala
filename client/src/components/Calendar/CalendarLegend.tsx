@@ -2,12 +2,15 @@ import { AGE_BRACKETS } from '../../lib/ageColors';
 
 export default function CalendarLegend() {
   return (
-    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600">
+    <div className="flex gap-2 overflow-x-auto pb-1 [-webkit-overflow-scrolling:touch] scrollbar-hide">
       {AGE_BRACKETS.map((bracket) => (
-        <span key={bracket.key} className="inline-flex items-center gap-2">
-          <span className={`inline-block h-3 w-3 rounded ${bracket.block.replace('text-', 'bg-').split(' ')[0]} ring-1 ring-inset ring-black/10`} />
+        <div 
+          key={bracket.key} 
+          className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap ${bracket.chip}`}
+        >
+          <span className="h-2.5 w-2.5 rounded-full bg-current/70 mix-blend-multiply" />
           {bracket.label}
-        </span>
+        </div>
       ))}
     </div>
   );
