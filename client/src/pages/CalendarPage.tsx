@@ -1,17 +1,10 @@
-import { useState } from 'react';
 import { useAuthStore } from '../store/auth';
 import { toast } from 'sonner';
-import { MonthView, type Party } from '../components/Calendar/MonthView';
 import CalendarLegend from '../components/Calendar/CalendarLegend';
-import { PartyModal } from '../components/Calendar/PartyModal';
-import { addMonths, subMonths } from 'date-fns';
+import CalendarResponsive from '../components/Calendar/CalendarResponsive';
 
 export function CalendarPage() {
   const { user, logout } = useAuthStore();
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [selectedParties, setSelectedParties] = useState<Party[]>([]);
-  const [modalOpen, setModalOpen] = useState(false);
   
   // Show access denied if not logged in
   if (!user) {
@@ -35,38 +28,12 @@ export function CalendarPage() {
     }
   };
 
-  const handlePreviousMonth = () => {
-    setCurrentDate(subMonths(currentDate, 1));
-  };
-
-  const handleNextMonth = () => {
-    setCurrentDate(addMonths(currentDate, 1));
-  };
-
-  const handleToday = () => {
-    setCurrentDate(new Date());
-  };
-
-  const handleDayClick = (date: Date, parties: Party[]) => {
-    setSelectedDate(date);
-    setSelectedParties(parties);
-    setModalOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setModalOpen(false);
-    setSelectedDate(null);
-    setSelectedParties([]);
-  };
-
   const handlePartyCreated = () => {
     toast.success('Party created successfully! 🎉');
-    // The MonthView will automatically refetch data
   };
 
   const handlePartyDeleted = () => {
     toast.success('Party deleted successfully');
-    // The MonthView will automatically refetch data
   };
 
   return (
@@ -105,27 +72,13 @@ export function CalendarPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-2 md:px-4 lg:px-6 py-8">
-        {/* Full-width Calendar Component */}
-        <MonthView 
-          currentDate={currentDate}
-          onPreviousMonth={handlePreviousMonth}
-          onNextMonth={handleNextMonth}
-          onToday={handleToday}
-          onDayClick={handleDayClick}
-        />
-      </main>
-
-      {/* Modal rendered at page level - overlays the entire app */}
-      {modalOpen && selectedDate && (
-        <PartyModal
-          date={selectedDate}
-          parties={selectedParties}
-          onClose={handleModalClose}
+      <main className="mx-auto max-w-7xl px-2 md:px-4 lg:px-6 py-6">
+        {/* Responsive Calendar Component */}
+        <CalendarResponsive 
           onPartyCreated={handlePartyCreated}
           onPartyDeleted={handlePartyDeleted}
         />
-      )}
+      </main>
     </div>
   );
 }
