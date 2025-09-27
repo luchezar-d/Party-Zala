@@ -85,6 +85,7 @@ export const BG = {
   locationRequired: 'Местоположението е задължително',
   validEmail: 'Моля въведете валиден имейл',
   guestCountNegative: 'Броят гости не може да е отрицателен',
+  invalidDateFormat: 'Датата трябва да е във формат YYYY-MM-DD',
   
   // Time formatting
   formatTime: (time: string) => {

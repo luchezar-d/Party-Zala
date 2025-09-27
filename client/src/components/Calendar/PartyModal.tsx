@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { X, Plus, Clock, MapPin, Users, Mail, User, Trash2, Calendar, Baby, Edit } from 'lucide-react';
+import { X, Plus, Clock, MapPin, Users, Mail, User, Trash2, Calendar, Baby, Edit, Eye } from 'lucide-react';
 import { api } from '../../lib/api';
 import { formatTime } from '../../lib/date';
 import { toast } from 'sonner';
 import { bracketForAge } from '../../lib/ageColors';
 import { BG } from '../../lib/i18n';
 import { PartyFormModal } from './PartyFormModal';
+import { PartyDetailsModal } from './PartyDetailsModal';
 
 interface Party {
   _id: string;
@@ -34,12 +35,19 @@ interface PartyModalProps {
 
 export function PartyModal({ date, parties, onClose, onPartyCreated, onPartyDeleted }: PartyModalProps) {
   const [showFormModal, setShowFormModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [editingParty, setEditingParty] = useState<Party | null>(null);
+  const [selectedParty, setSelectedParty] = useState<Party | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
 
   const handleEditParty = (party: Party) => {
     setEditingParty(party);
     setShowFormModal(true);
+  };
+
+  const handleViewDetails = (party: Party) => {
+    setSelectedParty(party);
+    setShowDetailsModal(true);
   };
 
   const handleAddNewParty = () => {
@@ -180,8 +188,16 @@ export function PartyModal({ date, parties, onClose, onPartyCreated, onPartyDele
                       
                       <div className="flex space-x-2">
                         <button
+                          onClick={() => handleViewDetails(party)}
+                          className="p-2 text-green-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                          title="Детайли"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                        <button
                           onClick={() => handleEditParty(party)}
                           className="p-2 text-blue-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Редактиране"
                         >
                           <Edit className="h-4 w-4" />
                         </button>
@@ -189,6 +205,7 @@ export function PartyModal({ date, parties, onClose, onPartyCreated, onPartyDele
                           onClick={() => handleDelete(party._id)}
                           disabled={deleting === party._id}
                           className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                          title="Изтриване"
                         >
                           {deleting === party._id ? (
                             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600"></div>
@@ -223,6 +240,14 @@ export function PartyModal({ date, parties, onClose, onPartyCreated, onPartyDele
         onSuccess={handleFormSuccess}
         date={date}
         editingParty={editingParty}
+      />
+
+      {/* Party Details Modal */}
+      <PartyDetailsModal
+        isOpen={showDetailsModal}
+        onClose={() => setShowDetailsModal(false)}
+        party={selectedParty}
+        date={date}
       />
     </div>
   );
