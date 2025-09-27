@@ -1,9 +1,10 @@
-import { format } from "date-fns";
-import { X, Plus } from "lucide-react";
+
+import { X, Plus, Edit } from "lucide-react";
 import { useState } from "react";
 import { bracketForAge } from "../../lib/ageColors"; 
 import type { Party } from "./MonthView";
-import { PartyForm } from "./PartyForm";
+import { PartyFormModal } from "./PartyFormModal";
+import { BG } from "../../lib/i18n";
 
 interface DaySheetProps {
   open: boolean;
@@ -14,17 +15,30 @@ interface DaySheetProps {
 }
 
 export function DaySheet({ open, onOpenChange, date, items = [], onPartyUpdated }: DaySheetProps) {
-  const [showForm, setShowForm] = useState(false);
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [editingParty, setEditingParty] = useState<Party | null>(null);
 
   if (!date || !open) return null;
 
-  const handlePartyCreated = () => {
-    setShowForm(false);
+  const handleAddNewParty = () => {
+    setEditingParty(null);
+    setShowFormModal(true);
+  };
+
+  const handleEditParty = (party: Party) => {
+    setEditingParty(party);
+    setShowFormModal(true);
+  };
+
+  const handleFormSuccess = () => {
+    setShowFormModal(false);
+    setEditingParty(null);
     onPartyUpdated();
   };
 
-  const handlePartyDeleted = () => {
-    onPartyUpdated();
+  const handleFormClose = () => {
+    setShowFormModal(false);
+    setEditingParty(null);
   };
 
   return (
@@ -45,7 +59,7 @@ export function DaySheet({ open, onOpenChange, date, items = [], onPartyUpdated 
         {/* Header */}
         <div className="flex items-center justify-between px-4 pb-4">
           <h3 className="text-xl font-bold text-app-text-primary">
-            {format(date, "EEEE, MMM d")}
+            {BG.formatWeekday(date)}, {BG.formatDateShort(date)}
           </h3>
           <button 
             onClick={() => onOpenChange(false)}
@@ -61,7 +75,7 @@ export function DaySheet({ open, onOpenChange, date, items = [], onPartyUpdated 
           {items.length > 0 && (
             <div className="mb-6">
               <h4 className="text-lg font-semibold text-app-text-primary mb-3">
-                Scheduled Parties ({items.length})
+                {BG.scheduledParties} ({items.length})
               </h4>
               <ul className="space-y-3">
                 {items.map((party) => {
@@ -71,22 +85,26 @@ export function DaySheet({ open, onOpenChange, date, items = [], onPartyUpdated 
                       key={party._id} 
                       className={`flex items-center justify-between rounded-xl px-4 py-3 ${bracket.block} border border-opacity-20`}
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 flex-1">
                         <div className="text-sm font-medium opacity-80">
                           {party.startTime || "—"}
                         </div>
-                        <div>
+                        <div className="flex-1">
                           <div className="font-semibold">{party.kidName}</div>
                           {typeof party.kidAge === "number" && (
-                            <div className="text-sm opacity-70">Age {party.kidAge}</div>
+                            <div className="text-sm opacity-70">{party.kidAge} {BG.yearsOld}</div>
+                          )}
+                          {party.locationName && (
+                            <div className="text-sm opacity-70 mt-1">{party.locationName}</div>
                           )}
                         </div>
                       </div>
-                      {party.locationName && (
-                        <div className="text-sm opacity-70 text-right">
-                          {party.locationName}
-                        </div>
-                      )}
+                      <button
+                        onClick={() => handleEditParty(party)}
+                        className="p-2 text-blue-400 hover:text-blue-600 hover:bg-blue-50/50 rounded-lg transition-colors ml-2"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </button>
                     </li>
                   );
                 })}
@@ -98,7 +116,7 @@ export function DaySheet({ open, onOpenChange, date, items = [], onPartyUpdated 
             <div className="text-center py-8">
               <div className="text-4xl mb-3">🎉</div>
               <p className="text-app-text-secondary mb-4">
-                No parties scheduled for this day
+                {BG.noPartiesScheduled}
               </p>
             </div>
           )}
@@ -107,35 +125,24 @@ export function DaySheet({ open, onOpenChange, date, items = [], onPartyUpdated 
           {items.length > 0 && <div className="my-6 h-px bg-app-border" />}
 
           {/* Add Party Section */}
-          {!showForm ? (
-            <button
-              onClick={() => setShowForm(true)}
-              className="w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed border-app-border rounded-xl text-app-text-secondary hover:border-pastel-sky-300 hover:text-pastel-sky-600 active:scale-[0.99] transition"
-            >
-              <Plus className="h-5 w-5" />
-              <span className="font-medium">Add New Party</span>
-            </button>
-          ) : (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h4 className="text-lg font-semibold text-app-text-primary">Add New Party</h4>
-                <button
-                  onClick={() => setShowForm(false)}
-                  className="text-app-text-secondary hover:text-app-text-primary"
-                >
-                  Cancel
-                </button>
-              </div>
-              <PartyForm
-                defaultDate={date}
-                onSuccess={handlePartyCreated}
-                onCancel={() => setShowForm(false)}
-                onPartyDeleted={handlePartyDeleted}
-              />
-            </div>
-          )}
+          <button
+            onClick={handleAddNewParty}
+            className="w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed border-app-border rounded-xl text-app-text-secondary hover:border-pastel-sky-300 hover:text-pastel-sky-600 active:scale-[0.99] transition"
+          >
+            <Plus className="h-5 w-5" />
+            <span className="font-medium">{BG.addNewParty}</span>
+          </button>
         </div>
       </div>
+
+      {/* Party Form Modal */}
+      <PartyFormModal
+        isOpen={showFormModal}
+        onClose={handleFormClose}
+        onSuccess={handleFormSuccess}
+        date={date}
+        editingParty={editingParty}
+      />
     </>
   );
 }
