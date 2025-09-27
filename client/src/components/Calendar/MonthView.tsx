@@ -114,7 +114,7 @@ export function MonthView({ currentDate, onPreviousMonth, onNextMonth, onToday, 
       <div className="rounded-3xl border border-app-border bg-app-card backdrop-blur shadow-sm overflow-hidden">
         {/* Weekday headings */}
         <div className="grid grid-cols-7 gap-px bg-gradient-to-r from-transparent via-app-border to-transparent">
-          {BG.weekdaysShort.map(d => (
+          {BG.weekdays.map(d => (
             <div key={d} className="py-3 text-center text-xs font-medium tracking-wide text-app-text-secondary">{d}</div>
           ))}
         </div>

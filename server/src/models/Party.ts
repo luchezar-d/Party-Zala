@@ -12,6 +12,13 @@ export interface IParty extends Document {
   parentEmail?: string;
   guestsCount?: number;
   notes?: string;
+  
+  // Simplified new fields
+  kidsCount?: number;               // Брой деца
+  parentsCount?: number;            // Брой родители
+  kidsCatering?: string;            // Кетъринг за децата
+  parentsCatering?: string;         // Кетъринг за родителите
+  
   createdBy: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -74,6 +81,27 @@ const partySchema = new Schema<IParty>({
     type: String,
     maxlength: 1000
   },
+  
+  // Simplified new fields
+  kidsCount: {
+    type: Number,
+    min: 0,
+    max: 500
+  },
+  parentsCount: {
+    type: Number,
+    min: 0,
+    max: 500
+  },
+  kidsCatering: {
+    type: String,
+    maxlength: 1000
+  },
+  parentsCatering: {
+    type: String,
+    maxlength: 1000
+  },
+  
   createdBy: {
     type: Schema.Types.ObjectId,
     ref: 'User',
@@ -83,7 +111,7 @@ const partySchema = new Schema<IParty>({
   timestamps: true,
   toJSON: {
     transform: function(doc, ret) {
-      delete ret.__v;
+      delete (ret as any).__v;
       return ret;
     }
   }
@@ -91,6 +119,7 @@ const partySchema = new Schema<IParty>({
 
 // Index for efficient date range queries
 partySchema.index({ partyDate: 1 });
+partySchema.index({ partyDate: 1, startTime: 1 });
 partySchema.index({ createdBy: 1, partyDate: 1 });
 
 export const Party = mongoose.model<IParty>('Party', partySchema);

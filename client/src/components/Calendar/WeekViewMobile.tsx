@@ -139,7 +139,7 @@ export default function WeekViewMobile() {
             >
               <div className="flex items-baseline justify-between mb-2">
                 <div className={`text-lg font-semibold ${isCurrentDay ? 'text-pastel-sky-700' : 'text-app-text-primary'}`}>
-                  {BG.formatWeekdayShort(date)}, {BG.formatDateShort(date)}
+                  {BG.formatWeekday(date)}, {BG.formatDateShort(date)}
                 </div>
                 <div className="text-sm text-app-text-secondary">
                   {items.length} {items.length === 1 ? BG.party : BG.parties}
