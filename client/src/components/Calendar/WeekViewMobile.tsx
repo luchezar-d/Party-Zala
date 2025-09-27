@@ -7,6 +7,7 @@ import { DaySheet } from "./DaySheet";
 import { api } from "../../lib/api";
 import { toast } from "sonner";
 import type { Party } from "./MonthView";
+import { BG } from "../../lib/i18n";
 
 export default function WeekViewMobile() {
   const [cursor, setCursor] = useState<Date>(new Date());
@@ -100,7 +101,7 @@ export default function WeekViewMobile() {
         {/* Center - Week range (absolutely centered) */}
         <div className="absolute left-1/2 transform -translate-x-1/2">
           <div className="font-semibold text-app-text-primary whitespace-nowrap">
-            {format(weekStart, "MMM d")} – {format(weekEnd, "MMM d, yyyy")}
+{BG.formatDateShort(weekStart)} – {BG.formatDateShort(weekEnd)}
           </div>
         </div>
         
@@ -110,7 +111,7 @@ export default function WeekViewMobile() {
             onClick={() => setCursor(new Date())}
             className="px-3 py-1.5 rounded-full bg-app-card border border-app-border text-sm font-medium active:scale-95 transition"
           >
-            Today
+{BG.today}
           </button>
           
           <button 
@@ -138,10 +139,10 @@ export default function WeekViewMobile() {
             >
               <div className="flex items-baseline justify-between mb-2">
                 <div className={`text-lg font-semibold ${isCurrentDay ? 'text-pastel-sky-700' : 'text-app-text-primary'}`}>
-                  {format(date, "EEE, MMM d")}
+                  {BG.formatWeekdayShort(date)}, {BG.formatDateShort(date)}
                 </div>
                 <div className="text-sm text-app-text-secondary">
-                  {items.length} {items.length === 1 ? 'party' : 'parties'}
+                  {items.length} {items.length === 1 ? BG.party : BG.parties}
                 </div>
               </div>
 
@@ -166,7 +167,7 @@ export default function WeekViewMobile() {
                   })}
                   {items.length > 3 && (
                     <div className="text-sm text-app-text-secondary">
-                      +{items.length - 3} more
+                      +{items.length - 3} {BG.more}
                     </div>
                   )}
                 </div>
@@ -174,7 +175,7 @@ export default function WeekViewMobile() {
               
               {items.length === 0 && (
                 <div className="text-sm text-app-text-secondary">
-                  Tap to add a party 🎉
+                  {BG.tapToAddParty}
                 </div>
               )}
             </button>
@@ -186,9 +187,9 @@ export default function WeekViewMobile() {
       {!loading && parties.length === 0 && (
         <div className="text-center py-12">
           <div className="text-6xl mb-4">🎉</div>
-          <h3 className="text-lg font-medium text-app-text-primary mb-2">No parties this week!</h3>
+          <h3 className="text-lg font-medium text-app-text-primary mb-2">{BG.noPartiesThisWeek}</h3>
           <p className="text-app-text-secondary mb-4">
-            Tap on any day to schedule your first party.
+            {BG.tapToAddParty}
           </p>
         </div>
       )}

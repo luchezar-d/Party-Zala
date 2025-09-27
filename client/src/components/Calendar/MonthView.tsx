@@ -5,6 +5,7 @@ import { DayCell } from "./DayCell.tsx";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { api } from '../../lib/api';
 import { toast } from 'sonner';
+import { BG } from '../../lib/i18n';
 
 export interface Party {
   _id: string;
@@ -29,9 +30,10 @@ interface MonthViewProps {
   onNextMonth: () => void;
   onToday: () => void;
   onDayClick: (date: Date, parties: Party[]) => void;
+  refreshKey?: number; // Used to trigger refetch when parties change
 }
 
-export function MonthView({ currentDate, onPreviousMonth, onNextMonth, onToday, onDayClick }: MonthViewProps) {
+export function MonthView({ currentDate, onPreviousMonth, onNextMonth, onToday, onDayClick, refreshKey }: MonthViewProps) {
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   const gridStart = startOfWeek(monthStart, { weekStartsOn: 0 });
@@ -57,7 +59,7 @@ export function MonthView({ currentDate, onPreviousMonth, onNextMonth, onToday, 
     };
 
     fetchParties();
-  }, [gridStart.toISOString(), gridEnd.toISOString()]);
+  }, [gridStart.toISOString(), gridEnd.toISOString(), refreshKey]);
 
   const byDay = useMemo(() => groupByDay(parties), [parties]);
   const days = useMemo(
@@ -88,7 +90,7 @@ export function MonthView({ currentDate, onPreviousMonth, onNextMonth, onToday, 
         {/* Center - Month title (absolutely centered) */}
         <div className="absolute left-1/2 transform -translate-x-1/2">
           <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-app-text-primary whitespace-nowrap">
-            {format(currentDate, "LLLL yyyy")}
+            {BG.months[currentDate.getMonth()]} {currentDate.getFullYear()}
           </h2>
         </div>
         
@@ -104,7 +106,7 @@ export function MonthView({ currentDate, onPreviousMonth, onNextMonth, onToday, 
             onClick={onToday}
             className="px-4 py-2 rounded-lg border border-app-border bg-app-card backdrop-blur shadow-sm hover:shadow-md hover:-translate-y-[1px] transition text-sm font-medium"
           >
-            Today
+            {BG.today}
           </button>
         </div>
       </div>
@@ -112,7 +114,7 @@ export function MonthView({ currentDate, onPreviousMonth, onNextMonth, onToday, 
       <div className="rounded-3xl border border-app-border bg-app-card backdrop-blur shadow-sm overflow-hidden">
         {/* Weekday headings */}
         <div className="grid grid-cols-7 gap-px bg-gradient-to-r from-transparent via-app-border to-transparent">
-          {["SUN","MON","TUE","WED","THU","FRI","SAT"].map(d => (
+          {BG.weekdaysShort.map(d => (
             <div key={d} className="py-3 text-center text-xs font-medium tracking-wide text-app-text-secondary">{d}</div>
           ))}
         </div>
@@ -135,9 +137,9 @@ export function MonthView({ currentDate, onPreviousMonth, onNextMonth, onToday, 
       {!loading && parties.length === 0 && (
         <div className="text-center py-12">
           <div className="text-6xl mb-4">🎉</div>
-          <h3 className="text-lg font-medium text-app-text-primary mb-2">No parties yet!</h3>
+          <h3 className="text-lg font-medium text-app-text-primary mb-2">{BG.noPartiesYet}</h3>
           <p className="text-app-text-secondary mb-4">
-            Click on any day to schedule your first kids' party.
+            {BG.clickToSchedule}
           </p>
         </div>
       )}
