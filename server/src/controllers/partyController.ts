@@ -53,8 +53,53 @@ export async function createParty(req: AuthenticatedRequest, res: Response) {
     await party.save();
 
     res.status(201).json(party);
-  } catch (error) {
+  } catch (error: any) {
     console.error('Create party error:', error);
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ message: 'Validation error', details: error.message });
+    }
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+export async function updateParty(req: AuthenticatedRequest, res: Response) {
+  try {
+    const { id } = req.params;
+
+    if (!req.user) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    const party = await Party.findById(id);
+    if (!party) {
+      return res.status(404).json({ message: 'Party not found' });
+    }
+
+    // Check if user owns the party
+    if (party.createdBy.toString() !== (req.user as any)._id.toString()) {
+      return res.status(403).json({ message: 'Not authorized to update this party' });
+    }
+
+    const partyData = { ...req.body };
+
+    // Handle partyDate if provided
+    if (partyData.partyDate) {
+      partyData.partyDate = new Date(partyData.partyDate + 'T00:00:00.000Z');
+    }
+
+    // Remove empty optional fields
+    if (partyData.parentEmail === '') {
+      delete partyData.parentEmail;
+    }
+
+    const updatedParty = await Party.findByIdAndUpdate(id, partyData, { 
+      new: true, 
+      runValidators: true 
+    });
+
+    res.json(updatedParty);
+  } catch (error: any) {
+    console.error('Update party error:', error);
     if (error.name === 'ValidationError') {
       return res.status(400).json({ message: 'Validation error', details: error.message });
     }
@@ -72,7 +117,7 @@ export async function deleteParty(req: AuthenticatedRequest, res: Response) {
     }
 
     // Check if user owns the party
-    if (party.createdBy.toString() !== req.user?._id.toString()) {
+    if (party.createdBy.toString() !== (req.user as any)?._id.toString()) {
       return res.status(403).json({ message: 'Not authorized to delete this party' });
     }
 

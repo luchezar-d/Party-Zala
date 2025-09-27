@@ -2,38 +2,29 @@ import { useAuthStore } from '../store/auth';
 import { toast } from 'sonner';
 import CalendarLegend from '../components/Calendar/CalendarLegend';
 import CalendarResponsive from '../components/Calendar/CalendarResponsive';
+import { BG } from '../lib/i18n';
 
 export function CalendarPage() {
   const { user, logout } = useAuthStore();
-  
-  // Show access denied if not logged in
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-sky-50 to-purple-50">
-        <div className="card p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
-          <p className="text-gray-600 mb-4">Please log in to access the calendar.</p>
-          <a href="/" className="btn-primary">Go to Login</a>
-        </div>
-      </div>
-    );
-  }
+
+  // AuthGate ensures user is authenticated, so user won't be null here
+  if (!user) return null;
 
   const handleLogout = async () => {
     try {
       await logout();
-      toast.success('Logged out successfully');
+      toast.success('Излязохте успешно');
     } catch (error) {
-      toast.error('Logout failed');
+      toast.error('Неуспешен изход');
     }
   };
 
   const handlePartyCreated = () => {
-    toast.success('Party created successfully! 🎉');
+    // Success message is now shown in the modal
   };
 
   const handlePartyDeleted = () => {
-    toast.success('Party deleted successfully');
+    // Success message is now shown in the modal
   };
 
   return (
@@ -42,8 +33,8 @@ export function CalendarPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <h1 className="text-xl font-bold text-gray-900">Party Zala</h1>
-              <p className="text-sm text-gray-600">Kids Party Calendar</p>
+              <h1 className="text-xl font-bold text-gray-900">{BG.appTitle}</h1>
+              <p className="text-sm text-gray-600">{BG.appSubtitle}</p>
             </div>
             
             {/* Age Legend in Header */}
@@ -53,14 +44,14 @@ export function CalendarPage() {
             
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <span>Welcome, {user.name}</span>
+                <span>{BG.welcome}, {user.name}</span>
               </div>
               
               <button
                 onClick={handleLogout}
                 className="btn-secondary flex items-center space-x-2"
               >
-                <span>Logout</span>
+                <span>{BG.logout}</span>
               </button>
             </div>
           </div>

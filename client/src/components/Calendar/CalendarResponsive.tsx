@@ -19,6 +19,7 @@ export default function CalendarResponsive({ onPartyCreated, onPartyDeleted }: C
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedParties, setSelectedParties] = useState<Party[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const handlePreviousMonth = () => {
     setCurrentDate(subMonths(currentDate, 1));
@@ -45,10 +46,17 @@ export default function CalendarResponsive({ onPartyCreated, onPartyDeleted }: C
   };
 
   const handlePartyCreatedInternal = () => {
+    setRefreshKey(prev => prev + 1);
+    setModalOpen(false); // Close modal after creation
     onPartyCreated?.();
   };
 
   const handlePartyDeletedInternal = () => {
+    setRefreshKey(prev => prev + 1);
+    // Close modal if it was the last party
+    if (selectedParties.length <= 1) {
+      setModalOpen(false);
+    }
     onPartyDeleted?.();
   };
 
@@ -64,6 +72,7 @@ export default function CalendarResponsive({ onPartyCreated, onPartyDeleted }: C
         onNextMonth={handleNextMonth}
         onToday={handleToday}
         onDayClick={handleDayClick}
+        refreshKey={refreshKey}
       />
       
       {/* Desktop Modal */}
