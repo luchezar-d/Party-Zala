@@ -110,8 +110,8 @@ const partySchema = new Schema<IParty>({
 }, {
   timestamps: true,
   toJSON: {
-    transform: function(doc, ret) {
-      delete (ret as any).__v;
+    transform: function(doc, ret: any) {
+      delete ret.__v;
       return ret;
     }
   }

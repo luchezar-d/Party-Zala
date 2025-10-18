@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { config } from '../config/env.js';
-import { User, IUser } from '../models/User.js';
+import { User } from '../models/User.js';
 
 declare global {
   namespace Express {
@@ -11,11 +11,7 @@ declare global {
   }
 }
 
-export interface AuthenticatedRequest extends Request {
-  user?: IUser;
-}
-
-export async function authenticate(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+export async function authenticate(req: Request, res: Response, next: NextFunction) {
   try {
     const token = req.cookies[config.COOKIE_NAME];
 
@@ -30,7 +26,10 @@ export async function authenticate(req: AuthenticatedRequest, res: Response, nex
       return res.status(401).json({ message: 'User not found' });
     }
 
-    req.user = user;
+    req.user = {
+      _id: (user._id as any).toString(),
+      email: user.email
+    };
     next();
   } catch (error) {
     if (error instanceof jwt.JsonWebTokenError) {
