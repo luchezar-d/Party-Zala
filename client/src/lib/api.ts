@@ -61,13 +61,14 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error('API Response Error:', error.response?.data || error.message);
+    console.error('API Response Error:', {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      message: error.response?.data || error.message
+    });
     
-    // Handle authentication errors
-    if (error.response?.status === 401) {
-      // Token expired or invalid - redirect to login
-      window.location.href = '/';
-    }
+    // Don't auto-redirect on 401 - let the app handle it
+    // The auth store will handle clearing the user state
     
     return Promise.reject(error);
   }

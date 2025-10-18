@@ -17,10 +17,10 @@ app.set('trust proxy', 1);
 // Security middleware
 app.use(helmet());
 
-// Rate limiting for auth routes (disabled in development)
+// Rate limiting for auth routes (temporarily relaxed for testing)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: config.NODE_ENV === 'development' ? 1000 : 5, // Very high limit in development
+  max: config.NODE_ENV === 'development' ? 1000 : 100, // Increased to 100 for testing
   message: 'Too many authentication attempts, please try again later',
   standardHeaders: true,
   legacyHeaders: false,
