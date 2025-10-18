@@ -2,7 +2,6 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import { User } from '../models/User.js';
 import { generateToken, setTokenCookie, clearTokenCookie } from '../utils/jwt.js';
-import { AuthenticatedRequest } from '../middleware/auth.js';
 
 export async function login(req: Request, res: Response) {
   try {
@@ -21,7 +20,7 @@ export async function login(req: Request, res: Response) {
     }
 
     // Generate token and set cookie
-    const token = generateToken(user._id.toString());
+    const token = generateToken((user._id as any).toString());
     setTokenCookie(res, token);
 
     // Return user data (without password)
@@ -48,16 +47,22 @@ export async function logout(req: Request, res: Response) {
   }
 }
 
-export async function me(req: AuthenticatedRequest, res: Response) {
+export async function me(req: Request, res: Response) {
   try {
     if (!req.user) {
       return res.status(401).json({ message: 'Not authenticated' });
     }
 
+    // Get full user data from database
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(401).json({ message: 'User not found' });
+    }
+
     const userData = {
-      id: req.user._id,
-      name: req.user.name,
-      email: req.user.email
+      id: user._id,
+      name: user.name,
+      email: user.email
     };
 
     res.json({ user: userData });

@@ -1,11 +1,12 @@
-import jwt from 'jsonwebtoken';
+import jwt, { Secret, SignOptions } from 'jsonwebtoken';
 import { Response } from 'express';
 import { config } from '../config/env.js';
 
 export function generateToken(userId: string): string {
-  return jwt.sign({ userId }, config.JWT_SECRET, {
-    expiresIn: config.JWT_EXPIRES
-  });
+  const options: SignOptions = {
+    expiresIn: config.JWT_EXPIRES as any
+  };
+  return jwt.sign({ userId }, config.JWT_SECRET as Secret, options);
 }
 
 export function setTokenCookie(res: Response, token: string): void {

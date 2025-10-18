@@ -1,8 +1,7 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { Party } from '../models/Party.js';
-import { AuthenticatedRequest } from '../middleware/auth.js';
 
-export async function listPartiesInRange(req: AuthenticatedRequest, res: Response) {
+export async function listPartiesInRange(req: Request, res: Response) {
   try {
     const { from, to } = req.query as { from: string; to: string };
 
@@ -32,7 +31,7 @@ export async function listPartiesInRange(req: AuthenticatedRequest, res: Respons
   }
 }
 
-export async function createParty(req: AuthenticatedRequest, res: Response) {
+export async function createParty(req: Request, res: Response) {
   try {
     if (!req.user) {
       return res.status(401).json({ message: 'Not authenticated' });
@@ -62,7 +61,7 @@ export async function createParty(req: AuthenticatedRequest, res: Response) {
   }
 }
 
-export async function updateParty(req: AuthenticatedRequest, res: Response) {
+export async function updateParty(req: Request, res: Response) {
   try {
     const { id } = req.params;
 
@@ -107,7 +106,7 @@ export async function updateParty(req: AuthenticatedRequest, res: Response) {
   }
 }
 
-export async function deleteParty(req: AuthenticatedRequest, res: Response) {
+export async function deleteParty(req: Request, res: Response) {
   try {
     const { id } = req.params;
 
