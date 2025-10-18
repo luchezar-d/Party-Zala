@@ -11,6 +11,9 @@ import { errorHandler } from './middleware/error.js';
 
 const app = express();
 
+// Trust proxy - required for secure cookies behind Railway proxy
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet());
 
@@ -24,12 +27,24 @@ const authLimiter = rateLimit({
   skip: () => config.NODE_ENV === 'development', // Skip rate limiting entirely in development
 });
 
-// CORS configuration
+// CORS configuration - strict origin checking with credentials
 app.use(cors({
-  origin: config.CLIENT_ORIGIN,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin matches our client origin
+    if (origin === config.CLIENT_ORIGIN) {
+      callback(null, true);
+    } else {
+      console.warn(`⚠️  Blocked request from unauthorized origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Set-Cookie']
 }));
 
 // Body parsing middleware
