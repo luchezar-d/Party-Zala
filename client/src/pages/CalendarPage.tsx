@@ -46,22 +46,20 @@ export function CalendarPage() {
               </div>
             </div>
             
-            {/* Right - User + Menu/Logout */}
+            {/* Right - Menu/Logout */}
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-              {/* Desktop: User name + Logout button */}
+              {/* Desktop: Logout + Menu */}
               <div className="hidden sm:flex items-center gap-3">
-                <span className="text-sm font-medium text-gray-700 truncate max-w-[150px]">
-                  {BG.welcome}, {user.name}
-                </span>
                 <button
                   onClick={handleLogout}
                   className="h-9 px-4 rounded-full bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-semibold text-sm shadow-md active:scale-95 transition-all focus-ring"
                 >
                   {BG.logout}
                 </button>
+                <MobileMenu userName={user.name} onLogout={handleLogout} />
               </div>
               
-              {/* Mobile: Hamburger Menu */}
+              {/* Mobile: Hamburger Menu only */}
               <div className="sm:hidden">
                 <MobileMenu userName={user.name} onLogout={handleLogout} />
               </div>

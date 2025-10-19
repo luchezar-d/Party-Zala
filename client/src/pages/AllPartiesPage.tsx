@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Search, Filter, Calendar, MapPin, Baby, Edit, X, Trash2, AlertTriangle } from 'lucide-react';
+import { Search, Filter, Calendar, MapPin, Baby, Edit, Trash2, AlertTriangle, ArrowLeft, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { toast } from 'sonner';
 import { BG } from '../lib/i18n';
@@ -8,6 +9,7 @@ import { PartyFormModal } from '../components/Calendar/PartyFormModal';
 import type { Party } from '../components/Calendar/MonthView';
 
 export function AllPartiesPage() {
+  const navigate = useNavigate();
   const [parties, setParties] = useState<Party[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -160,8 +162,15 @@ export function AllPartiesPage() {
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold text-gray-900">Всички партита</h1>
+      <div className="flex items-center gap-3">
+        <button
+          onClick={() => navigate('/calendar')}
+          className="h-10 w-10 rounded-full hover:bg-gray-100 active:scale-95 transition-all flex items-center justify-center focus-ring"
+          aria-label="Назад към календара"
+        >
+          <ArrowLeft className="h-5 w-5 text-gray-700" />
+        </button>
+        <h1 className="text-2xl font-bold text-gray-900 flex-1">Всички партита</h1>
         <span className="text-sm font-semibold text-gray-600 bg-gray-100 px-3 py-1.5 rounded-full">
           {filteredAndSortedParties.length} {filteredAndSortedParties.length === 1 ? 'парти' : 'партита'}
         </span>
