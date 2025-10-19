@@ -79,9 +79,9 @@ export default function WeekViewMobile() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-app-border bg-app-card p-8 text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-pastel-sky-600 mx-auto"></div>
-        <p className="mt-4 text-app-text-secondary">Loading week...</p>
+      <div className="rounded-2xl bg-white shadow-md ring-1 ring-black/5 p-8 text-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Loading week...</p>
       </div>
     );
   }
@@ -89,42 +89,44 @@ export default function WeekViewMobile() {
   return (
     <div className="space-y-3">
       {/* Week Navigation */}
-      <div className="relative flex items-center justify-between">
-        {/* Left - Previous button */}
-        <button 
-          onClick={() => setCursor(addWeeks(cursor, -1))}
-          className="h-10 w-10 rounded-full bg-app-card border border-app-border shadow-sm grid place-items-center active:scale-95 transition"
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </button>
-        
-        {/* Center - Week range (absolutely centered) */}
-        <div className="absolute left-1/2 transform -translate-x-1/2">
-          <div className="font-semibold text-app-text-primary whitespace-nowrap">
-{BG.formatDateShort(weekStart)} – {BG.formatDateShort(weekEnd)}
-          </div>
-        </div>
-        
-        {/* Right - Today and Next buttons */}
-        <div className="flex items-center gap-3">
+      <div className="sticky top-[52px] sm:top-[60px] z-30 bg-slate-50/80 backdrop-blur py-2">
+        <div className="relative flex items-center justify-between px-1">
+          {/* Left - Previous button */}
           <button 
-            onClick={() => setCursor(new Date())}
-            className="px-3 py-1.5 rounded-full bg-app-card border border-app-border text-sm font-medium active:scale-95 transition"
+            onClick={() => setCursor(addWeeks(cursor, -1))}
+            className="h-11 w-11 rounded-full bg-white shadow ring-1 ring-black/5 grid place-items-center active:scale-95 transition focus-ring"
+            aria-label="Предишна седмица"
           >
-{BG.today}
+            <ChevronLeft className="h-5 w-5 text-gray-700" />
           </button>
           
-          <button 
-            onClick={() => setCursor(addWeeks(cursor, 1))}
-            className="h-10 w-10 rounded-full bg-app-card border border-app-border shadow-sm grid place-items-center active:scale-95 transition"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
+          {/* Center - Week range */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 font-semibold text-gray-900 text-sm sm:text-base whitespace-nowrap">
+            {BG.formatDateShort(weekStart)} – {BG.formatDateShort(weekEnd)}
+          </div>
+          
+          {/* Right - Today and Next buttons */}
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setCursor(new Date())}
+              className="h-9 px-3 rounded-full bg-white shadow ring-1 ring-black/5 text-sm font-medium active:scale-95 transition focus-ring"
+            >
+              {BG.today}
+            </button>
+            
+            <button 
+              onClick={() => setCursor(addWeeks(cursor, 1))}
+              className="h-11 w-11 rounded-full bg-white shadow ring-1 ring-black/5 grid place-items-center active:scale-95 transition focus-ring"
+              aria-label="Следваща седмица"
+            >
+              <ChevronRight className="h-5 w-5 text-gray-700" />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Day Cards */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         {days.map(date => {
           const items = byDay[dayKey(date)] ?? [];
           const isCurrentDay = isToday(date);
@@ -133,27 +135,27 @@ export default function WeekViewMobile() {
             <button
               key={date.toISOString()}
               onClick={() => handleDayTap(date, items)}
-              className={`w-full rounded-2xl bg-app-card border border-app-border shadow-sm px-4 py-4 text-left active:scale-[0.99] transition ${
-                isCurrentDay ? 'ring-2 ring-pastel-sky-300 bg-pastel-sky-50' : ''
+              className={`w-full rounded-2xl bg-white shadow-md ring-1 ring-black/5 px-4 py-3 sm:px-5 sm:py-4 text-left active:scale-[0.99] transition min-h-[56px] ${
+                isCurrentDay ? 'ring-2 ring-sky-400 bg-sky-50' : ''
               }`}
             >
-              <div className="flex items-baseline justify-between mb-2">
-                <div className={`text-lg font-semibold ${isCurrentDay ? 'text-pastel-sky-700' : 'text-app-text-primary'}`}>
+              <div className="flex items-center justify-between gap-3 mb-1">
+                <h3 className={`text-lg sm:text-xl font-semibold ${isCurrentDay ? 'text-sky-700' : 'text-gray-900'}`}>
                   {BG.formatWeekday(date)}, {BG.formatDateShort(date)}
-                </div>
-                <div className="text-sm text-app-text-secondary">
+                </h3>
+                <span className="text-sm text-gray-500">
                   {items.length} {items.length === 1 ? BG.party : BG.parties}
-                </div>
+                </span>
               </div>
 
               {items.length > 0 && (
-                <div className="space-y-2">
+                <div className="flex flex-wrap gap-2 mt-2">
                   {items.slice(0, 3).map((party) => {
                     const bracket = bracketForAge(party.kidAge);
                     return (
                       <div 
                         key={party._id} 
-                        className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm mr-2 mb-1 ${bracket.chip}`}
+                        className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm ${bracket.chip} shadow-sm`}
                       >
                         <span className="text-xs opacity-80 font-medium">
                           {party.startTime ?? "—"}
@@ -166,7 +168,7 @@ export default function WeekViewMobile() {
                     );
                   })}
                   {items.length > 3 && (
-                    <div className="text-sm text-app-text-secondary">
+                    <div className="text-sm text-gray-500 px-2">
                       +{items.length - 3} {BG.more}
                     </div>
                   )}
@@ -174,9 +176,9 @@ export default function WeekViewMobile() {
               )}
               
               {items.length === 0 && (
-                <div className="text-sm text-app-text-secondary">
-                  {BG.tapToAddParty}
-                </div>
+                <p className="mt-1 text-gray-600 text-sm sm:text-base">
+                  {BG.tapToAddParty} 🎉
+                </p>
               )}
             </button>
           );
@@ -185,10 +187,10 @@ export default function WeekViewMobile() {
 
       {/* Empty State */}
       {!loading && parties.length === 0 && (
-        <div className="text-center py-12">
+        <div className="text-center py-12 px-4">
           <div className="text-6xl mb-4">🎉</div>
-          <h3 className="text-lg font-medium text-app-text-primary mb-2">{BG.noPartiesThisWeek}</h3>
-          <p className="text-app-text-secondary mb-4">
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{BG.noPartiesThisWeek}</h3>
+          <p className="text-gray-600 mb-4">
             {BG.tapToAddParty}
           </p>
         </div>

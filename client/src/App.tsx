@@ -3,8 +3,12 @@ import { Toaster } from 'sonner';
 import { Home } from './pages/Home';
 import { CalendarPage } from './pages/CalendarPage';
 import { AuthGate } from './components/AuthGate';
+import { useMobileViewport } from './hooks/useMobileViewport';
 
 function App() {
+  // Fix 100vh on iOS
+  useMobileViewport();
+  
   return (
     <Router>
       <div className="min-h-screen">

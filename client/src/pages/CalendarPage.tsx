@@ -28,43 +28,48 @@ export function CalendarPage() {
   };
 
   return (
-    <div className="min-h-screen bg-app-bg">
-      <header className="sticky top-0 z-10 backdrop-blur supports-[backdrop-filter]:bg-app-card/60 bg-app-card/80 border-b border-app-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-xl font-bold text-gray-900">{BG.appTitle}</h1>
-              <p className="text-sm text-gray-600">{BG.appSubtitle}</p>
+    <div className="safe-area min-h-[calc(var(--vh,1vh)*100)] bg-gradient-to-b from-slate-50 to-slate-100">
+      {/* Header */}
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 border-b border-gray-200">
+        <div className="max-w-screen-md mx-auto px-3 sm:px-4">
+          <div className="flex items-center justify-between h-14 sm:h-16 gap-2">
+            {/* Left - App Title */}
+            <div className="flex items-center space-x-2 min-w-0">
+              <h1 className="text-base sm:text-xl font-bold text-gray-900 truncate">{BG.appTitle}</h1>
             </div>
             
-            {/* Age Legend in Header */}
-            <div className="hidden md:flex items-center space-x-4">
-              <CalendarLegend />
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <span>{BG.welcome}, {user.name}</span>
+            {/* Right - User + Logout */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="hidden sm:flex items-center text-sm text-gray-600">
+                <span className="truncate max-w-[150px]">{BG.welcome}, {user.name}</span>
               </div>
               
               <button
                 onClick={handleLogout}
-                className="btn-secondary flex items-center space-x-2"
+                className="h-11 px-4 rounded-full bg-sky-600 hover:bg-sky-700 text-white font-medium text-sm shadow-sm active:scale-95 transition focus-ring"
               >
-                <span>{BG.logout}</span>
+                <span className="hidden sm:inline">{BG.logout}</span>
+                <span className="sm:hidden">Изход</span>
               </button>
             </div>
           </div>
           
           {/* Mobile Legend - shows below header on smaller screens */}
-          <div className="md:hidden py-3 border-t">
+          <div className="md:hidden py-2 border-t border-gray-100">
+            <CalendarLegend />
+          </div>
+        </div>
+        
+        {/* Desktop Legend */}
+        <div className="hidden md:block border-t border-gray-100">
+          <div className="max-w-screen-md mx-auto px-4 py-2">
             <CalendarLegend />
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-2 md:px-4 lg:px-6 py-6">
-        {/* Responsive Calendar Component */}
+      {/* Main Content */}
+      <main className="mx-auto w-full max-w-screen-md px-3 sm:px-4 py-3 sm:py-6">
         <CalendarResponsive 
           onPartyCreated={handlePartyCreated}
           onPartyDeleted={handlePartyDeleted}
