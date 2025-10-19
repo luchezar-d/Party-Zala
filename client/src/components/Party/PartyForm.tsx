@@ -108,15 +108,15 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center space-x-2 mb-4">
-        <div className="bg-primary-100 p-1.5 rounded-lg">
-          <Calendar className="h-4 w-4 text-primary-600" />
+      <div className="flex items-center space-x-3 mb-6">
+        <div className="bg-gradient-to-br from-sky-100 to-pink-100 p-2 rounded-xl">
+          <Calendar className="h-5 w-5 text-sky-700" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-gray-900">
+          <h2 className="text-xl font-bold text-gray-900">
             {editingParty ? BG.updateParty : BG.createParty}
           </h2>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm font-medium text-gray-600">
             {BG.formatDate(date)}
           </p>
         </div>
@@ -125,7 +125,7 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Basic Info Section */}
         <div className="space-y-4">
-          <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+          <div className="flex items-center space-x-2 text-sm font-bold text-gray-800">
             <Baby className="h-4 w-4" />
             <span>Основна информация</span>
           </div>
@@ -133,23 +133,23 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Kid Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                 Име *
               </label>
               <input
                 {...register('kidName')}
                 type="text"
-                className="input-field"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 font-medium"
                 placeholder="Име на детето"
               />
               {errors.kidName && (
-                <p className="mt-1 text-sm text-red-600">{errors.kidName.message}</p>
+                <p className="mt-1.5 text-sm text-red-600 font-medium">{errors.kidName.message}</p>
               )}
             </div>
 
             {/* Kid Age */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                 Години *
               </label>
               <input
@@ -157,27 +157,27 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
                 type="number"
                 min="1"
                 max="18"
-                className="input-field"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 font-medium"
                 placeholder="Възраст"
               />
               {errors.kidAge && (
-                <p className="mt-1 text-sm text-red-600">{errors.kidAge.message}</p>
+                <p className="mt-1.5 text-sm text-red-600 font-medium">{errors.kidAge.message}</p>
               )}
             </div>
 
             {/* Location */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                 Местоположение *
               </label>
               <input
                 {...register('locationName')}
                 type="text"
-                className="input-field"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 font-medium"
                 placeholder="HappyKids Center, градски парк"
               />
               {errors.locationName && (
-                <p className="mt-1 text-sm text-red-600">{errors.locationName.message}</p>
+                <p className="mt-1.5 text-sm text-red-600 font-medium">{errors.locationName.message}</p>
               )}
             </div>
           </div>
@@ -185,37 +185,37 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
 
         {/* Time Section */}
         <div className="space-y-4">
-          <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+          <div className="flex items-center space-x-2 text-sm font-bold text-gray-800">
             <Clock className="h-4 w-4" />
             <span>Час</span>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                 Начален час
               </label>
               <input
                 {...register('startTime')}
                 type="time"
-                className="input-field"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 font-medium"
               />
               {errors.startTime && (
-                <p className="mt-1 text-sm text-red-600">{errors.startTime.message}</p>
+                <p className="mt-1.5 text-sm text-red-600 font-medium">{errors.startTime.message}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                 Краен час
               </label>
               <input
                 {...register('endTime')}
                 type="time"
-                className="input-field"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 font-medium"
               />
               {errors.endTime && (
-                <p className="mt-1 text-sm text-red-600">{errors.endTime.message}</p>
+                <p className="mt-1.5 text-sm text-red-600 font-medium">{errors.endTime.message}</p>
               )}
             </div>
           </div>
@@ -223,41 +223,41 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
 
         {/* People Count Section */}
         <div className="space-y-4">
-          <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+          <div className="flex items-center space-x-2 text-sm font-bold text-gray-800">
             <Users className="h-4 w-4" />
             <span>Брой хора</span>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                 Брой деца
               </label>
               <input
                 {...register('kidsCount', { valueAsNumber: true })}
                 type="number"
                 min="0"
-                className="input-field"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 font-medium"
                 placeholder="10"
               />
               {errors.kidsCount && (
-                <p className="mt-1 text-sm text-red-600">{errors.kidsCount.message}</p>
+                <p className="mt-1.5 text-sm text-red-600 font-medium">{errors.kidsCount.message}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                 Брой родители
               </label>
               <input
                 {...register('parentsCount', { valueAsNumber: true })}
                 type="number"
                 min="0"
-                className="input-field"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 font-medium"
                 placeholder="8"
               />
               {errors.parentsCount && (
-                <p className="mt-1 text-sm text-red-600">{errors.parentsCount.message}</p>
+                <p className="mt-1.5 text-sm text-red-600 font-medium">{errors.parentsCount.message}</p>
               )}
             </div>
           </div>
@@ -265,14 +265,14 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
 
         {/* Catering Section */}
         <div className="space-y-4">
-          <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+          <div className="flex items-center space-x-2 text-sm font-bold text-gray-800">
             <ChefHat className="h-4 w-4" />
             <span>Кетъринг</span>
           </div>
           
           <div className="grid grid-cols-1 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                 Кетъринг деца
               </label>
               <textarea
@@ -282,12 +282,12 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
                 placeholder="Хамбургери, картофки, сок, торта..."
               />
               {errors.kidsCatering && (
-                <p className="mt-1 text-sm text-red-600">{errors.kidsCatering.message}</p>
+                <p className="mt-1.5 text-sm text-red-600 font-medium">{errors.kidsCatering.message}</p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                 Кетъринг родители
               </label>
               <textarea
@@ -297,7 +297,7 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
                 placeholder="Коктейлни хапки, салати, напитки..."
               />
               {errors.parentsCatering && (
-                <p className="mt-1 text-sm text-red-600">{errors.parentsCatering.message}</p>
+                <p className="mt-1.5 text-sm text-red-600 font-medium">{errors.parentsCatering.message}</p>
               )}
             </div>
           </div>
@@ -305,7 +305,7 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
 
         {/* Notes Section */}
         <div className="space-y-4">
-          <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+          <div className="flex items-center space-x-2 text-sm font-bold text-gray-800">
             <StickyNote className="h-4 w-4" />
             <span>Бележки</span>
           </div>
@@ -318,21 +318,21 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
               placeholder="Допълнителни бележки за партито..."
             />
             {errors.notes && (
-              <p className="mt-1 text-sm text-red-600">{errors.notes.message}</p>
+              <p className="mt-1.5 text-sm text-red-600 font-medium">{errors.notes.message}</p>
             )}
           </div>
         </div>
 
         {/* Form Actions */}
-        <div className="flex space-x-3 pt-4 border-t border-gray-100">
+        <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t-2 border-gray-100">
           <button
             type="submit"
             disabled={submitting}
-            className="flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+            className="flex-1 bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-200 shadow-md disabled:opacity-50 disabled:cursor-not-allowed min-h-[52px] active:scale-[0.98]"
           >
             {submitting ? (
               <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                <div className="animate-spin rounded-full h-5 w-5 border-3 border-white border-t-transparent mr-2"></div>
                 {editingParty ? 'Обновява...' : 'Създава...'}
               </div>
             ) : (
@@ -342,7 +342,7 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-colors min-h-[44px]"
+            className="px-6 py-3.5 text-gray-700 font-semibold hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all min-h-[52px] border-2 border-gray-200 active:scale-[0.98]"
           >
             {BG.cancel}
           </button>

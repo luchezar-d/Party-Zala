@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { Home } from './pages/Home';
 import { CalendarPage } from './pages/CalendarPage';
+import { AllPartiesPage } from './pages/AllPartiesPage';
 import { AuthGate } from './components/AuthGate';
 import { useMobileViewport } from './hooks/useMobileViewport';
 
@@ -26,6 +27,18 @@ function App() {
             element={
               <AuthGate requireAuth={true}>
                 <CalendarPage />
+              </AuthGate>
+            } 
+          />
+          <Route 
+            path="/all-parties" 
+            element={
+              <AuthGate requireAuth={true}>
+                <div className="safe-area min-h-[calc(var(--vh,1vh)*100)] bg-gradient-to-b from-slate-50 to-slate-100">
+                  <main className="mx-auto w-full max-w-7xl px-3 sm:px-4 lg:px-6 py-4 sm:py-6">
+                    <AllPartiesPage />
+                  </main>
+                </div>
               </AuthGate>
             } 
           />

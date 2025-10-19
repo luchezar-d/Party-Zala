@@ -6,14 +6,14 @@ export default function CalendarLegend() {
       {AGE_BRACKETS.map((bracket) => (
         <div 
           key={bracket.key} 
-          className={`inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs sm:text-sm font-medium whitespace-nowrap ${bracket.chip} shadow-sm ring-1 ring-black/10`}
+          className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-semibold whitespace-nowrap ${bracket.chip} shadow-sm ring-1 ring-black/10`}
         >
-          <span className={`h-2.5 w-2.5 rounded-full shrink-0 ${
-            bracket.key === '1-4' ? 'bg-rose-400' :
-            bracket.key === '5-8' ? 'bg-sky-400' :
-            bracket.key === '9-12' ? 'bg-amber-400' :
-            bracket.key === '13-18' ? 'bg-emerald-400' :
-            'bg-gray-400'
+          <span className={`h-2 w-2 rounded-full shrink-0 ${
+            bracket.key === '1-4' ? 'bg-rose-500' :
+            bracket.key === '5-8' ? 'bg-sky-500' :
+            bracket.key === '9-12' ? 'bg-amber-500' :
+            bracket.key === '13-18' ? 'bg-emerald-500' :
+            'bg-gray-500'
           }`} />
           {bracket.label}
         </div>

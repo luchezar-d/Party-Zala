@@ -2,6 +2,7 @@ import { useAuthStore } from '../store/auth';
 import { toast } from 'sonner';
 import CalendarLegend from '../components/Calendar/CalendarLegend';
 import CalendarResponsive from '../components/Calendar/CalendarResponsive';
+import MobileMenu from '../components/ui/MobileMenu';
 import { BG } from '../lib/i18n';
 
 export function CalendarPage() {
@@ -30,46 +31,52 @@ export function CalendarPage() {
   return (
     <div className="safe-area min-h-[calc(var(--vh,1vh)*100)] bg-gradient-to-b from-slate-50 to-slate-100">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur supports-[backdrop-filter]:bg-white/70 border-b border-gray-200">
-        <div className="max-w-screen-md mx-auto px-3 sm:px-4">
-          <div className="flex items-center justify-between h-14 sm:h-16 gap-2">
-            {/* Left - App Title */}
-            <div className="flex items-center space-x-2 min-w-0">
-              <h1 className="text-base sm:text-xl font-bold text-gray-900 truncate">{BG.appTitle}</h1>
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/80 border-b border-gray-200/80 shadow-sm">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+          <div className="flex items-center justify-between h-12 sm:h-14 gap-3">
+            {/* Left - App Title + Legend (Desktop) */}
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+              <h1 className="text-base sm:text-xl font-bold bg-gradient-to-r from-sky-600 to-pink-600 bg-clip-text text-transparent whitespace-nowrap">
+                {BG.appTitle}
+              </h1>
+              
+              {/* Desktop Inline Legend - Compact */}
+              <div className="hidden lg:flex items-center gap-2 overflow-x-auto no-scrollbar">
+                <CalendarLegend />
+              </div>
             </div>
             
-            {/* Right - User + Logout */}
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <div className="hidden sm:flex items-center text-sm text-gray-600">
-                <span className="truncate max-w-[150px]">{BG.welcome}, {user.name}</span>
+            {/* Right - User + Menu/Logout */}
+            <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+              {/* Desktop: User name + Logout button */}
+              <div className="hidden sm:flex items-center gap-3">
+                <span className="text-sm font-medium text-gray-700 truncate max-w-[150px]">
+                  {BG.welcome}, {user.name}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="h-9 px-4 rounded-full bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-semibold text-sm shadow-md active:scale-95 transition-all focus-ring"
+                >
+                  {BG.logout}
+                </button>
               </div>
               
-              <button
-                onClick={handleLogout}
-                className="h-11 px-4 rounded-full bg-sky-600 hover:bg-sky-700 text-white font-medium text-sm shadow-sm active:scale-95 transition focus-ring"
-              >
-                <span className="hidden sm:inline">{BG.logout}</span>
-                <span className="sm:hidden">Изход</span>
-              </button>
+              {/* Mobile: Hamburger Menu */}
+              <div className="sm:hidden">
+                <MobileMenu userName={user.name} onLogout={handleLogout} />
+              </div>
             </div>
           </div>
           
-          {/* Mobile Legend - shows below header on smaller screens */}
-          <div className="md:hidden py-2 border-t border-gray-100">
-            <CalendarLegend />
-          </div>
-        </div>
-        
-        {/* Desktop Legend */}
-        <div className="hidden md:block border-t border-gray-100">
-          <div className="max-w-screen-md mx-auto px-4 py-2">
+          {/* Mobile/Tablet Legend - Compact row below header */}
+          <div className="lg:hidden py-2 border-t border-gray-100">
             <CalendarLegend />
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="mx-auto w-full max-w-screen-md px-3 sm:px-4 py-3 sm:py-6">
+      <main className="mx-auto w-full max-w-7xl px-3 sm:px-4 lg:px-6 py-3 sm:py-6">
         <CalendarResponsive 
           onPartyCreated={handlePartyCreated}
           onPartyDeleted={handlePartyDeleted}

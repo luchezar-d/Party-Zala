@@ -53,7 +53,7 @@ export function DaySheet({ open, onOpenChange, date, items = [], onPartyUpdated 
         {/* Existing Parties */}
         {items.length > 0 && (
           <div className="mb-6">
-            <h4 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">
+            <h4 className="text-base sm:text-lg font-bold text-gray-900 mb-4">
               {BG.scheduledParties} ({items.length})
             </h4>
             <ul className="space-y-3">
@@ -62,25 +62,25 @@ export function DaySheet({ open, onOpenChange, date, items = [], onPartyUpdated 
                 return (
                   <li 
                     key={party._id} 
-                    className={`flex items-center justify-between rounded-xl px-4 py-3 ${bracket.block} border border-opacity-20 shadow-sm min-h-[56px]`}
+                    className={`flex items-center justify-between rounded-2xl px-4 py-4 ${bracket.block} border border-opacity-20 shadow-md min-h-[64px] hover:shadow-lg transition-shadow`}
                   >
                     <div className="flex items-center gap-3 flex-1">
-                      <div className="text-sm font-medium opacity-80 min-w-[3rem]">
+                      <div className="text-sm font-bold opacity-80 min-w-[3rem]">
                         {party.startTime || "—"}
                       </div>
                       <div className="flex-1">
-                        <div className="font-semibold text-gray-900">{party.kidName}</div>
+                        <div className="font-bold text-gray-900">{party.kidName}</div>
                         {typeof party.kidAge === "number" && (
-                          <div className="text-sm opacity-70">{party.kidAge} {BG.yearsOld}</div>
+                          <div className="text-sm font-medium opacity-75">{party.kidAge} {BG.yearsOld}</div>
                         )}
                         {party.locationName && (
-                          <div className="text-sm opacity-70 mt-1">{party.locationName}</div>
+                          <div className="text-sm font-medium opacity-75 mt-0.5">{party.locationName}</div>
                         )}
                       </div>
                     </div>
                     <button
                       onClick={() => handleEditParty(party)}
-                      className="h-11 w-11 -mr-2 rounded-full hover:bg-white/50 active:scale-95 transition flex items-center justify-center focus-ring"
+                      className="h-11 w-11 -mr-2 rounded-full hover:bg-white/60 active:scale-95 transition-all flex items-center justify-center focus-ring"
                       aria-label={`${BG.edit} ${party.kidName}`}
                     >
                       <Edit className="h-5 w-5 text-blue-600" />
@@ -93,21 +93,21 @@ export function DaySheet({ open, onOpenChange, date, items = [], onPartyUpdated 
         )}
 
         {items.length === 0 && (
-          <div className="text-center py-8">
-            <div className="text-5xl mb-3">🎉</div>
-            <p className="text-gray-600 mb-4">
+          <div className="text-center py-10">
+            <div className="text-6xl mb-3">🎉</div>
+            <p className="text-gray-600 font-medium text-base">
               {BG.noPartiesScheduled}
             </p>
           </div>
         )}
 
         {/* Divider */}
-        {items.length > 0 && <div className="my-6 h-px bg-gray-200" />}
+        {items.length > 0 && <div className="my-6 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent" />}
 
         {/* Add Party Button */}
         <button
           onClick={handleAddNewParty}
-          className="w-full flex items-center justify-center gap-2 h-12 sm:h-14 border-2 border-dashed border-gray-300 rounded-xl text-gray-600 hover:border-sky-400 hover:text-sky-600 hover:bg-sky-50/50 active:scale-[0.99] transition font-medium focus-ring"
+          className="w-full flex items-center justify-center gap-2.5 h-14 sm:h-14 border-2 border-dashed border-gray-300 rounded-2xl text-gray-700 hover:border-sky-500 hover:text-sky-700 hover:bg-sky-50/80 active:scale-[0.98] transition-all font-semibold focus-ring shadow-sm"
         >
           <Plus className="h-5 w-5" />
           <span>{BG.addNewParty}</span>

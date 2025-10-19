@@ -127,3 +127,62 @@ export async function deleteParty(req: Request, res: Response) {
     res.status(500).json({ message: 'Internal server error' });
   }
 }
+
+// Get ALL parties without date restrictions
+export async function listAllParties(req: Request, res: Response) {
+  try {
+    const parties = await Party.find({})
+      .sort({ partyDate: 1, startTime: 1 });
+
+    res.json(parties);
+  } catch (error) {
+    console.error('List all parties error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+// Delete all parties (admin only - be careful!)
+export async function deleteAllParties(req: Request, res: Response) {
+  try {
+    const result = await Party.deleteMany({});
+    
+    res.json({ 
+      message: 'All parties deleted successfully',
+      deletedCount: result.deletedCount
+    });
+  } catch (error) {
+    console.error('Delete all parties error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
+
+// Delete parties in a date range
+export async function deletePartiesInRange(req: Request, res: Response) {
+  try {
+    const { from, to } = req.query as { from: string; to: string };
+
+    if (!from || !to) {
+      return res.status(400).json({ message: 'Both from and to dates are required' });
+    }
+
+    const fromDate = new Date(from + 'T00:00:00.000Z');
+    const toDate = new Date(to + 'T23:59:59.999Z');
+
+    const result = await Party.deleteMany({
+      partyDate: {
+        $gte: fromDate,
+        $lte: toDate
+      }
+    });
+
+    res.json({ 
+      message: 'Parties deleted successfully',
+      deletedCount: result.deletedCount,
+      from,
+      to
+    });
+  } catch (error) {
+    console.error('Delete parties in range error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+}
