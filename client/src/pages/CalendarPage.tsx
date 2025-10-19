@@ -48,8 +48,14 @@ export function CalendarPage() {
             
             {/* Right - Menu/Logout */}
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-              {/* Desktop: Logout + Menu */}
+              {/* Desktop: All Parties + Logout + Menu */}
               <div className="hidden sm:flex items-center gap-3">
+                <button
+                  onClick={() => window.location.href = '/all-parties'}
+                  className="h-9 px-4 rounded-full bg-gradient-to-r from-pink-600 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white font-semibold text-sm shadow-md active:scale-95 transition-all focus-ring"
+                >
+                  Всички партита
+                </button>
                 <button
                   onClick={handleLogout}
                   className="h-9 px-4 rounded-full bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-semibold text-sm shadow-md active:scale-95 transition-all focus-ring"

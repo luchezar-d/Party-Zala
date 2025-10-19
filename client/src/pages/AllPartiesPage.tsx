@@ -165,10 +165,11 @@ export function AllPartiesPage() {
       <div className="flex items-center gap-3">
         <button
           onClick={() => navigate('/calendar')}
-          className="h-10 w-10 rounded-full hover:bg-gray-100 active:scale-95 transition-all flex items-center justify-center focus-ring"
+          className="flex items-center gap-2 h-10 px-4 rounded-full bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-semibold text-sm shadow-md active:scale-95 transition-all focus-ring"
           aria-label="Назад към календара"
         >
-          <ArrowLeft className="h-5 w-5 text-gray-700" />
+          <ArrowLeft className="h-5 w-5" />
+          <span className="hidden sm:inline">Назад към календара</span>
         </button>
         <h1 className="text-2xl font-bold text-gray-900 flex-1">Всички партита</h1>
         <span className="text-sm font-semibold text-gray-600 bg-gray-100 px-3 py-1.5 rounded-full">

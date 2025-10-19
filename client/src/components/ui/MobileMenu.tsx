@@ -4,11 +4,11 @@ import { Menu as MenuIcon, X, LogOut, Calendar, List } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 interface MobileMenuProps {
-  userName: string;
+  userName?: string; // Optional since we don't display it
   onLogout: () => void;
 }
 
-export default function MobileMenu({ userName, onLogout }: MobileMenuProps) {
+export default function MobileMenu({ onLogout }: MobileMenuProps) {
   const location = useLocation();
   
   return (
@@ -33,12 +33,6 @@ export default function MobileMenu({ userName, onLogout }: MobileMenuProps) {
             leaveTo="transform opacity-0 scale-95"
           >
             <Menu.Items className="absolute right-0 mt-2 w-64 origin-top-right rounded-2xl bg-white shadow-xl ring-1 ring-black/5 focus:outline-none overflow-hidden">
-              {/* User Info */}
-              <div className="px-4 py-3 border-b border-gray-100 bg-gradient-to-br from-sky-50 to-pink-50">
-                <p className="text-xs font-medium text-gray-500">Здравей,</p>
-                <p className="text-sm font-bold text-gray-900 truncate">{userName}</p>
-              </div>
-
               {/* Menu Items */}
               <div className="py-2">
                 <Menu.Item>
