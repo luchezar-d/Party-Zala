@@ -30,12 +30,18 @@ export const useAuthStore = create<AuthState>((set) => ({
       console.log('📤 Auth Store: Sending login request...');
       const response = await api.post('/auth/login', { email, password });
       console.log('✅ Auth Store: Login response:', response.data);
-      console.log('🍪 Auth Store: Response headers:', response.headers);
+      console.log('🍪 Auth Store: Response headers:', {
+        'set-cookie': response.headers['set-cookie'],
+        'access-control-allow-credentials': response.headers['access-control-allow-credentials'],
+        'access-control-allow-origin': response.headers['access-control-allow-origin'],
+        all: response.headers
+      });
       
       const { user } = response.data;
       
       set({ user, loading: false });
       console.log('✅ Auth Store: User set in state:', user);
+      console.log('🍪 Auth Store: Document cookies after login:', document.cookie);
     } catch (error: any) {
       console.error('❌ Auth Store: Login failed:', {
         status: error.response?.status,
