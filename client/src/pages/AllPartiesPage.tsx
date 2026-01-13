@@ -34,7 +34,8 @@ export function AllPartiesPage() {
       console.error('Error fetching parties:', error);
       // Only show error if it's NOT a 401 (auth errors are handled globally)
       if (error.response?.status !== 401) {
-        toast.error('Грешка при зареждане на партитата');
+        const errorMsg = error.response?.data?.message || error.message || 'Unknown error';
+        toast.error(`Грешка при зареждане: ${errorMsg}`);
       }
     } finally {
       setLoading(false);

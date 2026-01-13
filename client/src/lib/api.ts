@@ -75,15 +75,20 @@ api.interceptors.response.use(
     
     // Handle 401 Unauthorized errors globally
     if (error.response?.status === 401) {
-      // Only show one auth error message, not multiple
-      if (!authErrorShown) {
+      // Only show error and redirect if it's NOT the initial auth check (/auth/me)
+      // AND we're not already on the login page
+      // This prevents infinite loop on login page
+      const isAuthMeRequest = error.config?.url?.includes('/auth/me');
+      const isOnLoginPage = window.location.pathname === '/';
+      
+      if (!isAuthMeRequest && !isOnLoginPage && !authErrorShown) {
         authErrorShown = true;
         toast.error('Session expired. Please log in again.', {
-          id: 'auth-error', // Use same ID to prevent duplicates
+          id: 'auth-error',
           duration: 5000
         });
         
-        // Reset the flag after 2 seconds so user can see new errors if they persist
+        // Reset the flag after 2 seconds
         if (authErrorTimeout) clearTimeout(authErrorTimeout);
         authErrorTimeout = setTimeout(() => {
           authErrorShown = false;

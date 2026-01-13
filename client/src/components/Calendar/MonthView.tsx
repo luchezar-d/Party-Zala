@@ -54,7 +54,8 @@ export function MonthView({ currentDate, onPreviousMonth, onNextMonth, onToday, 
         console.error('Error fetching parties:', error);
         // Only show error if it's NOT a 401 (auth errors are handled globally)
         if (error.response?.status !== 401) {
-          toast.error('Failed to load parties');
+          const errorMsg = error.response?.data?.message || error.message || 'Unknown error';
+          toast.error(`Failed to load parties: ${errorMsg}`);
         }
       } finally {
         setLoading(false);
