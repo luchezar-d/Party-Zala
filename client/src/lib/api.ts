@@ -5,7 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
 // Track if we've already shown an auth error to prevent spam
 let authErrorShown = false;
-let authErrorTimeout: NodeJS.Timeout | null = null;
+let authErrorTimeout: number | null = null;
 
 // Debug: Log the API URL being used
 console.log('🔧 API Configuration:', {
@@ -87,7 +87,7 @@ api.interceptors.response.use(
         if (authErrorTimeout) clearTimeout(authErrorTimeout);
         authErrorTimeout = setTimeout(() => {
           authErrorShown = false;
-        }, 2000);
+        }, 2000) as unknown as number;
         
         // Redirect to login after a brief delay
         setTimeout(() => {
