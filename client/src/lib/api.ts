@@ -1,6 +1,11 @@
 import axios from 'axios';
+import { toast } from 'sonner';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+
+// Track if we've already shown an auth error to prevent spam
+let authErrorShown = false;
+let authErrorTimeout: NodeJS.Timeout | null = null;
 
 // Debug: Log the API URL being used
 console.log('🔧 API Configuration:', {
@@ -64,11 +69,32 @@ api.interceptors.response.use(
     console.error('API Response Error:', {
       status: error.response?.status,
       statusText: error.response?.statusText,
-      message: error.response?.data || error.message
+      message: error.response?.data || error.message,
+      url: error.config?.url
     });
     
-    // Don't auto-redirect on 401 - let the app handle it
-    // The auth store will handle clearing the user state
+    // Handle 401 Unauthorized errors globally
+    if (error.response?.status === 401) {
+      // Only show one auth error message, not multiple
+      if (!authErrorShown) {
+        authErrorShown = true;
+        toast.error('Session expired. Please log in again.', {
+          id: 'auth-error', // Use same ID to prevent duplicates
+          duration: 5000
+        });
+        
+        // Reset the flag after 2 seconds so user can see new errors if they persist
+        if (authErrorTimeout) clearTimeout(authErrorTimeout);
+        authErrorTimeout = setTimeout(() => {
+          authErrorShown = false;
+        }, 2000);
+        
+        // Redirect to login after a brief delay
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1500);
+      }
+    }
     
     return Promise.reject(error);
   }

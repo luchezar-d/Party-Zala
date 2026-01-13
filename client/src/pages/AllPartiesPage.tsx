@@ -30,9 +30,12 @@ export function AllPartiesPage() {
       // Use the new /all endpoint to fetch ALL parties
       const response = await api.get('/parties/all');
       setParties(response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching parties:', error);
-      toast.error('Грешка при зареждане на партитата');
+      // Only show error if it's NOT a 401 (auth errors are handled globally)
+      if (error.response?.status !== 401) {
+        toast.error('Грешка при зареждане на партитата');
+      }
     } finally {
       setLoading(false);
     }

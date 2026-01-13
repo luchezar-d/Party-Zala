@@ -50,9 +50,12 @@ export function MonthView({ currentDate, onPreviousMonth, onNextMonth, onToday, 
         const to = format(gridEnd, 'yyyy-MM-dd');
         const response = await api.get(`/parties?from=${from}&to=${to}`);
         setParties(response.data);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching parties:', error);
-        toast.error('Failed to load parties');
+        // Only show error if it's NOT a 401 (auth errors are handled globally)
+        if (error.response?.status !== 401) {
+          toast.error('Failed to load parties');
+        }
       } finally {
         setLoading(false);
       }
