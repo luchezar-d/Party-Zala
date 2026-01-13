@@ -70,7 +70,9 @@ api.interceptors.response.use(
       status: error.response?.status,
       statusText: error.response?.statusText,
       message: error.response?.data || error.message,
-      url: error.config?.url
+      url: error.config?.url,
+      method: error.config?.method,
+      cookies: document.cookie
     });
     
     // Handle 401 Unauthorized errors globally
@@ -80,8 +82,20 @@ api.interceptors.response.use(
       // This prevents infinite loop on login page
       const isAuthMeRequest = error.config?.url?.includes('/auth/me');
       const isOnLoginPage = window.location.pathname === '/';
+      const isLoginRequest = error.config?.url?.includes('/auth/login');
       
-      if (!isAuthMeRequest && !isOnLoginPage && !authErrorShown) {
+      console.log('🔐 401 Error Debug:', {
+        isAuthMeRequest,
+        isOnLoginPage,
+        isLoginRequest,
+        pathname: window.location.pathname,
+        url: error.config?.url,
+        willShowToast: !isAuthMeRequest && !isOnLoginPage && !authErrorShown,
+        cookies: document.cookie
+      });
+      
+      // Don't redirect if this is a login request itself failing
+      if (!isAuthMeRequest && !isOnLoginPage && !isLoginRequest && !authErrorShown) {
         authErrorShown = true;
         toast.error('Session expired. Please log in again.', {
           id: 'auth-error',
