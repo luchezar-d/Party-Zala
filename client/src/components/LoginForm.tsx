@@ -77,8 +77,8 @@ export function LoginForm() {
                 {...register('email')}
                 type="email"
                 id="email"
-                className={`input-field pl-10 ${errors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
-                placeholder="admin@party-zala.local"
+                className={`input-field pl-10 w-full ${errors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
+                placeholder="your@email.com"
               />
             </div>
             {errors.email && (
@@ -97,8 +97,8 @@ export function LoginForm() {
                 {...register('password')}
                 type={showPassword ? 'text' : 'password'}
                 id="password"
-                className={`input-field pl-10 pr-10 ${errors.password ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
-                placeholder="Enter your password"
+                className={`input-field pl-10 pr-10 w-full ${errors.password ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
+                placeholder="••••••••"
               />
               <button
                 type="button"
@@ -129,15 +129,6 @@ export function LoginForm() {
             )}
           </button>
         </form>
-
-        {/* Demo Credentials Note */}
-        <div className="mt-6 p-4 bg-blue-50 rounded-xl">
-          <p className="text-sm text-blue-800 text-center">
-            <strong>Demo credentials:</strong><br />
-            Email: admin@party-zala.local<br />
-            Password: ChangeMe123!
-          </p>
-        </div>
       </div>
     </div>
   );

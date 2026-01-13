@@ -8,6 +8,7 @@ async function startServer() {
     const { default: app } = await import('./app.js');
     const { connectDB } = await import('./db/mongoose.js');
     const { ensureAdmin } = await import('./seed/ensureAdmin.js');
+    const { updateAdminName } = await import('./seed/updateAdminName.js');
     const { config } = await import('./config/env.js');
 
     // Connect to MongoDB
@@ -17,6 +18,9 @@ async function startServer() {
     // Ensure admin user exists
     await ensureAdmin();
     console.log('✅ Admin user ensured');
+    
+    // Update admin name to match env config
+    await updateAdminName();
 
     // Start the server
     const PORT = config.PORT || 4000;

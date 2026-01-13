@@ -56,23 +56,35 @@ app.use((req, res, next) => {
   next();
 });
 
-// CORS configuration - strict origin checking with credentials
+// CORS configuration - allow credentials with flexible origin checking
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, Postman, etc.)
+    // Allow requests with no origin (mobile apps, Postman, curl, etc.)
     if (!origin) {
-      console.log('🌐 CORS: Allowing request with no origin');
+      console.log('🌐 CORS: Allowing request with no origin (likely same-origin or mobile)');
+      return callback(null, true);
+    }
+    
+    // In development, allow localhost on any port
+    if (config.NODE_ENV === 'development' && origin.includes('localhost')) {
+      console.log('✅ CORS: Allowing localhost origin:', origin);
       return callback(null, true);
     }
     
     // Check if origin matches our client origin
     if (origin === config.CLIENT_ORIGIN) {
-      console.log('✅ CORS: Allowing origin:', origin);
-      callback(null, true);
-    } else {
-      console.warn('⚠️  CORS: Blocked unauthorized origin:', origin, '(expected:', config.CLIENT_ORIGIN + ')');
-      callback(new Error('Not allowed by CORS'));
+      console.log('✅ CORS: Allowing configured origin:', origin);
+      return callback(null, true);
     }
+    
+    // In production, also check for Railway preview URLs
+    if (config.NODE_ENV === 'production' && origin.includes('railway.app')) {
+      console.log('✅ CORS: Allowing Railway origin:', origin);
+      return callback(null, true);
+    }
+    
+    console.warn('⚠️  CORS: Blocked unauthorized origin:', origin, '(expected:', config.CLIENT_ORIGIN + ')');
+    callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
