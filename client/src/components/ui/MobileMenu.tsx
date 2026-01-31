@@ -1,16 +1,13 @@
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import { Menu as MenuIcon, X, Calendar, List } from 'lucide-react';
-// import { LogOut } from 'lucide-react'; // MVP: Not needed without logout
+import { Menu as MenuIcon, X, LogOut, Calendar, List } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
-// MVP: Props interface kept for future use
-// interface MobileMenuProps {
-//   userName?: string;
-//   onLogout?: () => void;
-// }
+interface MobileMenuProps {
+  onLogout: () => void;
+}
 
-export default function MobileMenu() {
+export default function MobileMenu({ onLogout }: MobileMenuProps) {
   const location = useLocation();
   
   return (
@@ -74,8 +71,7 @@ export default function MobileMenu() {
                 </Menu.Item>
               </div>
 
-              {/* MVP: Logout hidden - auth disabled */}
-              {/* TODO: Re-enable when auth is back
+              {/* Logout */}
               <div className="border-t border-gray-100">
                 <Menu.Item>
                   {({ active }) => (
@@ -91,7 +87,6 @@ export default function MobileMenu() {
                   )}
                 </Menu.Item>
               </div>
-              */}
             </Menu.Items>
           </Transition>
         </>

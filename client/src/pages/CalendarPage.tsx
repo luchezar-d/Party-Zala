@@ -1,27 +1,19 @@
-// import { useAuthStore } from '../store/auth'; // MVP: Auth disabled
-// import { toast } from 'sonner'; // MVP: Not needed without auth
+import { toast } from 'sonner';
+import { simpleAuth } from '../lib/simpleAuth';
 import CalendarLegend from '../components/Calendar/CalendarLegend';
 import CalendarResponsive from '../components/Calendar/CalendarResponsive';
 import MobileMenu from '../components/ui/MobileMenu';
 import { BG } from '../lib/i18n';
 
 export function CalendarPage() {
-  // MVP: Auth disabled - no user object needed
-  // const user = { name: 'Admin', email: 'admin@partyzala.com' };
-  
-  /* COMMENTED OUT FOR MVP - KEEP FOR FUTURE USE
-  const { user, logout } = useAuthStore();
-  if (!user) return null;
-  
-  const handleLogout = async () => {
-    try {
-      await logout();
-      toast.success('Излязохте успешно');
-    } catch (error) {
-      toast.error('Неуспешен изход');
-    }
+  const handleLogout = () => {
+    simpleAuth.setLoggedOut();
+    toast.success('Излязохте успешно');
+    // Redirect to login after a brief moment
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 500);
   };
-  */
 
   const handlePartyCreated = () => {
     // Success message is now shown in the modal
@@ -59,21 +51,18 @@ export function CalendarPage() {
                 >
                   Всички партита
                 </button>
-                {/* MVP: Logout button hidden - no auth needed */}
-                {/* TODO: Re-enable when auth is back
                 <button
                   onClick={handleLogout}
                   className="h-9 px-4 rounded-full bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-semibold text-sm shadow-md active:scale-95 transition-all focus-ring"
                 >
                   {BG.logout}
                 </button>
-                */}
-                <MobileMenu />
+                <MobileMenu onLogout={handleLogout} />
               </div>
               
               {/* Mobile: Hamburger Menu only */}
               <div className="sm:hidden">
-                <MobileMenu />
+                <MobileMenu onLogout={handleLogout} />
               </div>
             </div>
           </div>

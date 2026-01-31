@@ -3,7 +3,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../store/auth';
+import { api } from '../lib/api';
+import { simpleAuth } from '../lib/simpleAuth';
 import { Calendar, Mail, Lock, AlertCircle } from 'lucide-react';
 
 const loginSchema = z.object({
@@ -15,7 +16,8 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
   const navigate = useNavigate();
-  const { login, loading, error, clearError } = useAuthStore();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
   const {
@@ -28,11 +30,23 @@ export function LoginForm() {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      clearError();
-      await login(data.email, data.password);
+      setLoading(true);
+      setError(null);
+      
+      // Simple auth: just call the login endpoint
+      // Server validates credentials, we just mark as logged in
+      await api.post('/auth/login', { 
+        email: data.email, 
+        password: data.password 
+      });
+      
+      // If successful, mark as logged in and redirect
+      simpleAuth.setLoggedIn();
       navigate('/calendar');
-    } catch (error) {
-      // Error is handled by the store
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.message || 'Invalid credentials';
+      setError(errorMessage);
+      setLoading(false);
     }
   };
 

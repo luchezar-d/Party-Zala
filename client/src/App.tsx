@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
-// import { Home } from './pages/Home'; // MVP: Login disabled
+import { Home } from './pages/Home'; // Login page
 import { CalendarPage } from './pages/CalendarPage';
 import { AllPartiesPage } from './pages/AllPartiesPage';
 import { AuthGate } from './components/AuthGate';
@@ -14,25 +14,16 @@ function App() {
     <Router>
       <div className="min-h-screen">
         <Routes>
-          {/* MVP: Auth disabled - redirect root to calendar */}
+          {/* Login page - no auth required */}
           <Route 
             path="/" 
-            element={
-              <AuthGate requireAuth={false}>
-                <CalendarPage />
-              </AuthGate>
-            } 
-          />
-          {/* Keep login page for future use
-          <Route 
-            path="/login" 
             element={
               <AuthGate requireAuth={false}>
                 <Home />
               </AuthGate>
             } 
           />
-          */}
+          {/* Calendar - requires auth */}
           <Route 
             path="/calendar" 
             element={
