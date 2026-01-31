@@ -1,30 +1,27 @@
 // import { useAuthStore } from '../store/auth'; // MVP: Auth disabled
-import { toast } from 'sonner';
+// import { toast } from 'sonner'; // MVP: Not needed without auth
 import CalendarLegend from '../components/Calendar/CalendarLegend';
 import CalendarResponsive from '../components/Calendar/CalendarResponsive';
 import MobileMenu from '../components/ui/MobileMenu';
 import { BG } from '../lib/i18n';
 
 export function CalendarPage() {
-  // MVP: Auth disabled - hardcode user for UI purposes
-  const user = { name: 'Admin', email: 'admin@partyzala.com' };
+  // MVP: Auth disabled - no user object needed
+  // const user = { name: 'Admin', email: 'admin@partyzala.com' };
   
   /* COMMENTED OUT FOR MVP - KEEP FOR FUTURE USE
   const { user, logout } = useAuthStore();
   if (!user) return null;
-  */
-
+  
   const handleLogout = async () => {
-    // MVP: No real logout, just show message
-    toast.success('Излязохте успешно');
-    // TODO: Re-enable when auth is back
-    // try {
-    //   await logout();
-    //   toast.success('Излязохте успешно');
-    // } catch (error) {
-    //   toast.error('Неуспешен изход');
-    // }
+    try {
+      await logout();
+      toast.success('Излязохте успешно');
+    } catch (error) {
+      toast.error('Неуспешен изход');
+    }
   };
+  */
 
   const handlePartyCreated = () => {
     // Success message is now shown in the modal
@@ -52,9 +49,9 @@ export function CalendarPage() {
               </div>
             </div>
             
-            {/* Right - Menu/Logout */}
+            {/* Right - Menu/Actions */}
             <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-              {/* Desktop: All Parties + Logout + Menu */}
+              {/* Desktop: All Parties + Menu */}
               <div className="hidden sm:flex items-center gap-3">
                 <button
                   onClick={() => window.location.href = '/all-parties'}
@@ -62,18 +59,21 @@ export function CalendarPage() {
                 >
                   Всички партита
                 </button>
+                {/* MVP: Logout button hidden - no auth needed */}
+                {/* TODO: Re-enable when auth is back
                 <button
                   onClick={handleLogout}
                   className="h-9 px-4 rounded-full bg-gradient-to-r from-sky-600 to-sky-700 hover:from-sky-700 hover:to-sky-800 text-white font-semibold text-sm shadow-md active:scale-95 transition-all focus-ring"
                 >
                   {BG.logout}
                 </button>
-                <MobileMenu userName={user.name} onLogout={handleLogout} />
+                */}
+                <MobileMenu />
               </div>
               
               {/* Mobile: Hamburger Menu only */}
               <div className="sm:hidden">
-                <MobileMenu userName={user.name} onLogout={handleLogout} />
+                <MobileMenu />
               </div>
             </div>
           </div>
