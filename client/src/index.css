@@ -76,3 +76,129 @@
     @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-accent-100 text-accent-800;
   }
 }
+
+/* ========================================
+   Mobile-only UI tweaks for Login Page
+   Applied only on screens <= 480px
+   ======================================== */
+@media (max-width: 480px) {
+  /* Container: Allow scrolling, reduce excessive top space */
+  .login-container {
+    min-height: 100vh;
+    min-height: 100dvh; /* dynamic viewport height for mobile browsers */
+    padding: 24px 16px;
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Card: Tighter padding, softer shadow, constrained width */
+  .login-card {
+    padding: 20px !important;
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    border-radius: 16px !important;
+  }
+  
+  /* Header: Reduce spacing */
+  .login-header {
+    margin-bottom: 20px !important;
+  }
+  
+  /* Logo: Slightly smaller on mobile */
+  .login-logo {
+    padding: 10px !important;
+    border-radius: 12px !important;
+  }
+  
+  /* Title: Scale down, improve line-height */
+  .login-title {
+    font-size: 1.125rem !important; /* 18px */
+    line-height: 1.3 !important;
+    margin-bottom: 8px !important;
+    font-weight: 700;
+  }
+  
+  /* Subtitle: Smaller, better spacing */
+  .login-subtitle {
+    font-size: 0.8125rem !important; /* 13px */
+    line-height: 1.4 !important;
+    color: rgb(107, 114, 128) !important;
+  }
+  
+  /* Form: Tighter vertical rhythm */
+  .login-form {
+    gap: 14px !important;
+  }
+  
+  /* Input wrapper: Ensure proper touch targets */
+  .login-input-wrapper {
+    position: relative;
+  }
+  
+  /* Input fields: Comfortable height for thumbs, better focus */
+  .login-input {
+    height: 48px !important;
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+    padding-left: 40px !important;
+    border-radius: 12px !important;
+    transition: all 0.2s ease;
+  }
+  
+  .login-input:focus {
+    outline: none;
+    border-color: rgb(59, 130, 246);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  
+  .login-input::placeholder {
+    color: rgb(156, 163, 175);
+    font-size: 14px;
+  }
+  
+  /* Eye toggle: Larger touch target */
+  .login-eye-toggle {
+    min-width: 48px !important;
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .login-eye-toggle:active {
+    transform: scale(0.95);
+  }
+  
+  /* Submit button: Full-width, comfortable height */
+  .login-submit {
+    height: 52px !important;
+    padding: 0 !important;
+    border-radius: 12px !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    margin-top: 20px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.15s ease;
+  }
+  
+  .login-submit:active:not(:disabled) {
+    transform: scale(0.98);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Labels: Slightly smaller, less heavy */
+  .login-form label {
+    font-size: 0.75rem !important; /* 12px */
+    font-weight: 500 !important;
+    color: rgb(55, 65, 81) !important;
+  }
+  
+  /* Error messages: Ensure readability */
+  .login-form p.text-red-600 {
+    font-size: 0.75rem !important;
+    line-height: 1.3 !important;
+  }
+}

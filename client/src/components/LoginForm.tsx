@@ -51,19 +51,19 @@ export function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 sm:px-6 lg:px-8">
-      <div className="card p-6 sm:p-8 w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center p-4 sm:px-6 lg:px-8 login-container">
+      <div className="card login-card p-5 sm:p-8 w-full max-w-md">
         {/* Header */}
-        <div className="text-center mb-6 sm:mb-8">
+        <div className="text-center login-header mb-5 sm:mb-8">
           <div className="flex justify-center mb-3 sm:mb-4">
-            <div className="bg-gradient-to-br from-primary-500 to-secondary-500 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl">
-              <Calendar className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
+            <div className="bg-gradient-to-br from-primary-500 to-secondary-500 login-logo p-2.5 sm:p-3 rounded-xl sm:rounded-2xl">
+              <Calendar className="h-6 w-6 sm:h-8 sm:w-8 text-white" />
             </div>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1.5 sm:mb-2 px-2">
+          <h1 className="login-title text-lg sm:text-2xl font-bold text-gray-900 mb-1.5 sm:mb-2 px-2 leading-tight">
             Welcome to Party Zala! 🎉
           </h1>
-          <p className="text-sm sm:text-base text-gray-600 px-2">
+          <p className="login-subtitle text-xs sm:text-base text-gray-600 px-2 leading-relaxed">
             Sign in to manage your kids' party calendar
           </p>
         </div>
@@ -79,19 +79,20 @@ export function LoginForm() {
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="login-form space-y-3.5 sm:space-y-6">
           {/* Email Field */}
           <div>
             <label htmlFor="email" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
               Email Address
             </label>
-            <div className="relative">
-              <Mail className="absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+            <div className="relative login-input-wrapper">
+              <Mail className="absolute left-3 sm:left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 pointer-events-none" />
               <input
                 {...register('email')}
                 type="email"
                 id="email"
-                className={`input-field pl-9 sm:pl-10 w-full text-sm sm:text-base h-10 sm:h-11 ${errors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
+                autoComplete="email"
+                className={`login-input input-field pl-10 sm:pl-10 w-full text-sm sm:text-base ${errors.email ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
                 placeholder="your@email.com"
               />
             </div>
@@ -105,20 +106,22 @@ export function LoginForm() {
             <label htmlFor="password" className="block text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2">
               Password
             </label>
-            <div className="relative">
-              <Lock className="absolute left-2.5 sm:left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+            <div className="relative login-input-wrapper">
+              <Lock className="absolute left-3 sm:left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400 pointer-events-none" />
               <input
                 {...register('password')}
                 type={showPassword ? 'text' : 'password'}
                 id="password"
-                className={`input-field pl-9 sm:pl-10 pr-10 w-full text-sm sm:text-base h-10 sm:h-11 ${errors.password ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
+                autoComplete="current-password"
+                className={`login-input input-field pl-10 sm:pl-10 pr-12 sm:pr-12 w-full text-sm sm:text-base ${errors.password ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}`}
                 placeholder="••••••••"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2.5 sm:right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg sm:text-xl"
+                className="login-eye-toggle absolute right-0 top-0 h-full flex items-center justify-center w-12 sm:w-12 text-gray-400 hover:text-gray-600 active:text-gray-700 text-lg sm:text-xl transition-colors"
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
+                tabIndex={-1}
               >
                 {showPassword ? '👁️' : '👁️‍🗨️'}
               </button>
@@ -132,7 +135,7 @@ export function LoginForm() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full btn-primary py-2.5 sm:py-3 text-sm sm:text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed mt-6 sm:mt-8"
+            className="login-submit w-full btn-primary text-sm sm:text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed mt-5 sm:mt-8 active:scale-[0.98] transition-transform"
           >
             {loading ? (
               <div className="flex items-center justify-center">
