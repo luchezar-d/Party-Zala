@@ -1,13 +1,20 @@
-import { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuthStore } from '../store/auth';
+// MVP: Auth disabled - imports commented out but kept for future use
+// import { useEffect, useState } from 'react';
+// import { Navigate } from 'react-router-dom';
+// import { useAuthStore } from '../store/auth';
 
 interface AuthGateProps {
   children: React.ReactNode;
   requireAuth?: boolean;
 }
 
-export function AuthGate({ children, requireAuth = true }: AuthGateProps) {
+export function AuthGate({ children }: AuthGateProps) {
+  // MVP: Auth disabled for internal use (3-5 users)
+  // TODO: Re-enable auth for production with external users
+  // Just render children directly without any auth checks
+  return <>{children}</>;
+
+  /* COMMENTED OUT FOR MVP - KEEP FOR FUTURE USE
   const { user, loading } = useAuthStore();
   const [hasHydrated, setHasHydrated] = useState(false);
 
@@ -41,7 +48,6 @@ export function AuthGate({ children, requireAuth = true }: AuthGateProps) {
     );
   }
 
-  // Temporarily disable navigation to test for redirect loops
   console.log('AuthGate: Final state', { requireAuth, user: !!user, shouldRedirectToHome: requireAuth && !user, shouldRedirectToCalendar: !requireAuth && user });
   
   if (requireAuth && !user) {
@@ -53,4 +59,5 @@ export function AuthGate({ children, requireAuth = true }: AuthGateProps) {
   }
 
   return <>{children}</>;
+  */
 }

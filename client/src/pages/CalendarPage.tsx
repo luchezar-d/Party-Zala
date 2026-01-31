@@ -1,4 +1,4 @@
-import { useAuthStore } from '../store/auth';
+// import { useAuthStore } from '../store/auth'; // MVP: Auth disabled
 import { toast } from 'sonner';
 import CalendarLegend from '../components/Calendar/CalendarLegend';
 import CalendarResponsive from '../components/Calendar/CalendarResponsive';
@@ -6,18 +6,24 @@ import MobileMenu from '../components/ui/MobileMenu';
 import { BG } from '../lib/i18n';
 
 export function CalendarPage() {
+  // MVP: Auth disabled - hardcode user for UI purposes
+  const user = { name: 'Admin', email: 'admin@partyzala.com' };
+  
+  /* COMMENTED OUT FOR MVP - KEEP FOR FUTURE USE
   const { user, logout } = useAuthStore();
-
-  // AuthGate ensures user is authenticated, so user won't be null here
   if (!user) return null;
+  */
 
   const handleLogout = async () => {
-    try {
-      await logout();
-      toast.success('Излязохте успешно');
-    } catch (error) {
-      toast.error('Неуспешен изход');
-    }
+    // MVP: No real logout, just show message
+    toast.success('Излязохте успешно');
+    // TODO: Re-enable when auth is back
+    // try {
+    //   await logout();
+    //   toast.success('Излязохте успешно');
+    // } catch (error) {
+    //   toast.error('Неуспешен изход');
+    // }
   };
 
   const handlePartyCreated = () => {

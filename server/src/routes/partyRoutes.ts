@@ -13,8 +13,9 @@ import { validateCreateParty, validateUpdateParty, validateListParties } from '.
 
 const router = Router();
 
-// All party routes require authentication
-router.use(authenticate);
+// MVP: Auth disabled for internal use (3-5 users)
+// TODO: Re-enable auth for production with external users
+// router.use(authenticate);
 
 // GET routes
 router.get('/', validateListParties, listPartiesInRange); // With date range

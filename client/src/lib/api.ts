@@ -1,11 +1,11 @@
 import axios from 'axios';
-import { toast } from 'sonner';
+// import { toast } from 'sonner'; // MVP: Disabled for auth-free mode
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
-// Track if we've already shown an auth error to prevent spam
-let authErrorShown = false;
-let authErrorTimeout: number | null = null;
+// MVP: Auth disabled - these variables not needed but kept for future use
+// let authErrorShown = false;
+// let authErrorTimeout: number | null = null;
 
 // Debug: Log the API URL being used
 console.log('🔧 API Configuration:', {
@@ -75,11 +75,11 @@ api.interceptors.response.use(
       cookies: document.cookie
     });
     
+    // MVP: Auth disabled - no 401 handling needed
+    // TODO: Re-enable for production with external users
+    /* COMMENTED OUT FOR MVP - KEEP FOR FUTURE USE
     // Handle 401 Unauthorized errors globally
     if (error.response?.status === 401) {
-      // Only show error and redirect if it's NOT the initial auth check (/auth/me)
-      // AND we're not already on the login page
-      // This prevents infinite loop on login page
       const isAuthMeRequest = error.config?.url?.includes('/auth/me');
       const isOnLoginPage = window.location.pathname === '/';
       const isLoginRequest = error.config?.url?.includes('/auth/login');
@@ -94,7 +94,6 @@ api.interceptors.response.use(
         cookies: document.cookie
       });
       
-      // Don't redirect if this is a login request itself failing
       if (!isAuthMeRequest && !isOnLoginPage && !isLoginRequest && !authErrorShown) {
         authErrorShown = true;
         toast.error('Session expired. Please log in again.', {
@@ -102,18 +101,17 @@ api.interceptors.response.use(
           duration: 5000
         });
         
-        // Reset the flag after 2 seconds
         if (authErrorTimeout) clearTimeout(authErrorTimeout);
         authErrorTimeout = setTimeout(() => {
           authErrorShown = false;
         }, 2000) as unknown as number;
         
-        // Redirect to login after a brief delay
         setTimeout(() => {
           window.location.href = '/';
         }, 1500);
       }
     }
+    */
     
     return Promise.reject(error);
   }

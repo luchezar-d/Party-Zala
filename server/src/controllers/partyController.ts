@@ -33,14 +33,23 @@ export async function listPartiesInRange(req: Request, res: Response) {
 
 export async function createParty(req: Request, res: Response) {
   try {
+    // MVP: Auth disabled - skip user check and use default admin user
+    // TODO: Re-enable auth for production with external users
+    /* COMMENTED OUT FOR MVP - KEEP FOR FUTURE USE
     if (!req.user) {
       return res.status(401).json({ message: 'Not authenticated' });
     }
+    */
+
+    // MVP: Use a default admin user ID (get the first admin user from DB)
+    const User = (await import('../models/User.js')).User;
+    const adminUser = await User.findOne({ email: 'admin@partyzala.com' });
+    const defaultUserId = adminUser?._id || '000000000000000000000000';
 
     const partyData = {
       ...req.body,
       partyDate: new Date(req.body.partyDate + 'T00:00:00.000Z'),
-      createdBy: req.user._id
+      createdBy: defaultUserId // MVP: Use default admin user instead of req.user._id
     };
 
     // Remove empty optional fields
@@ -65,19 +74,26 @@ export async function updateParty(req: Request, res: Response) {
   try {
     const { id } = req.params;
 
+    // MVP: Auth disabled - skip user check and ownership validation
+    // TODO: Re-enable auth for production with external users
+    /* COMMENTED OUT FOR MVP - KEEP FOR FUTURE USE
     if (!req.user) {
       return res.status(401).json({ message: 'Not authenticated' });
     }
+    */
 
     const party = await Party.findById(id);
     if (!party) {
       return res.status(404).json({ message: 'Party not found' });
     }
 
+    // MVP: Skip ownership check - anyone can edit any party
+    /* COMMENTED OUT FOR MVP - KEEP FOR FUTURE USE
     // Check if user owns the party
     if (party.createdBy.toString() !== (req.user as any)._id.toString()) {
       return res.status(403).json({ message: 'Not authorized to update this party' });
     }
+    */
 
     const partyData = { ...req.body };
 
@@ -115,10 +131,14 @@ export async function deleteParty(req: Request, res: Response) {
       return res.status(404).json({ message: 'Party not found' });
     }
 
+    // MVP: Auth disabled - skip ownership check, anyone can delete any party
+    // TODO: Re-enable auth for production with external users
+    /* COMMENTED OUT FOR MVP - KEEP FOR FUTURE USE
     // Check if user owns the party
     if (party.createdBy.toString() !== (req.user as any)?._id.toString()) {
       return res.status(403).json({ message: 'Not authorized to delete this party' });
     }
+    */
 
     await Party.findByIdAndDelete(id);
     res.json({ message: 'Party deleted successfully' });
