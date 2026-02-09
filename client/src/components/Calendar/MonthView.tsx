@@ -24,7 +24,7 @@ export interface Party {
   parentsCount?: number;
   kidsCatering?: string;
   parentsCatering?: string;
-  phoneNumber: string;
+  phoneNumber?: string;
   deposit?: number;
   partyType?: string;
   createdAt?: string;

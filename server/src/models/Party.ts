@@ -20,7 +20,7 @@ export interface IParty extends Document {
   parentsCatering?: string;         // Кетъринг за родителите
   
   // New fields for contact and payment
-  phoneNumber: string;              // Тел. Номер (required)
+  phoneNumber?: string;             // Тел. Номер (required for new records via validation)
   deposit?: number;                 // Капаро (optional)
   partyType?: string;               // Вид (Външно парти, Пейнтбол, Детска зала)
   
@@ -110,7 +110,6 @@ const partySchema = new Schema<IParty>({
   // New fields for contact and payment
   phoneNumber: {
     type: String,
-    required: true,
     trim: true,
     maxlength: 50
   },
