@@ -1,6 +1,5 @@
 import { Plus, Edit } from "lucide-react";
 import { useState } from "react";
-import { bracketForAge } from "../../lib/ageColors"; 
 import type { Party } from "./MonthView";
 import { PartyFormModal } from "./PartyFormModal";
 import { BG } from "../../lib/i18n";
@@ -58,11 +57,10 @@ export function DaySheet({ open, onOpenChange, date, items = [], onPartyUpdated 
             </h4>
             <ul className="space-y-3">
               {items.map((party) => {
-                const bracket = bracketForAge(party.kidAge);
                 return (
                   <li 
                     key={party._id} 
-                    className={`flex items-center justify-between rounded-2xl px-4 py-4 ${bracket.block} border border-opacity-20 shadow-md min-h-[64px] hover:shadow-lg transition-shadow`}
+                    className="flex items-center justify-between rounded-2xl px-4 py-4 bg-purple-100/80 text-purple-900 ring-1 ring-purple-200/50 border-opacity-20 shadow-md min-h-[64px] hover:shadow-lg transition-shadow"
                   >
                     <div className="flex items-center gap-3 flex-1">
                       <div className="flex-1">

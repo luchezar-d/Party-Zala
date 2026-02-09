@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { toast } from 'sonner';
 import { BG } from '../lib/i18n';
-import { bracketForAge } from '../lib/ageColors';
 import { PartyFormModal } from '../components/Calendar/PartyFormModal';
 import type { Party } from '../components/Calendar/MonthView';
 
@@ -406,13 +405,12 @@ export function AllPartiesPage() {
       ) : (
         <div className="space-y-3">
           {filteredAndSortedParties.map((party) => {
-            const bracket = bracketForAge(party.kidAge);
             const partyDate = new Date(party.partyDate);
             
             return (
               <div
                 key={party._id}
-                className={`rounded-2xl ${bracket.block} border border-opacity-20 shadow-md p-4 hover:shadow-lg transition-shadow`}
+                className="rounded-2xl bg-purple-100/80 text-purple-900 ring-1 ring-purple-200/50 border-opacity-20 shadow-md p-4 hover:shadow-lg transition-shadow"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">

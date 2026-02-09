@@ -2,7 +2,6 @@ import { clsx } from "clsx";
 import { format, isToday, isWeekend } from "date-fns";
 import { CalendarClock } from "lucide-react";
 import type { Party } from "./MonthView";
-import { bracketForAge } from "../../lib/ageColors";
 
 interface DayCellProps {
   date: Date;
@@ -43,13 +42,12 @@ export function DayCell({ date, isOtherMonth, parties, onClick }: DayCellProps) 
         {/* Event chips */}
         <div className="mt-2 space-y-1.5">
           {parties.slice(0, maxVisible).map((p) => {
-            const bracket = bracketForAge(p.kidAge);
             return (
               <div
                 key={p._id}
                 className={clsx(
                   "flex flex-col gap-0.5 truncate rounded-xl px-2 py-1.5 text-xs ring-1",
-                  bracket.chip
+                  "bg-purple-100/80 text-purple-900 ring-purple-200/50"
                 )}
               >
                 <div className="flex items-center gap-1.5 truncate">

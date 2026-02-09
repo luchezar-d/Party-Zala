@@ -1,6 +1,5 @@
 import { toast } from 'sonner';
 import { simpleAuth } from '../lib/simpleAuth';
-import CalendarLegend from '../components/Calendar/CalendarLegend';
 import CalendarResponsive from '../components/Calendar/CalendarResponsive';
 import MobileMenu from '../components/ui/MobileMenu';
 import { BG } from '../lib/i18n';
@@ -29,16 +28,11 @@ export function CalendarPage() {
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md supports-[backdrop-filter]:bg-white/80 border-b border-gray-200/80 shadow-sm">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
           <div className="flex items-center justify-between h-12 sm:h-14 gap-3">
-            {/* Left - App Title + Legend (Desktop) */}
+            {/* Left - App Title */}
             <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
               <h1 className="text-base sm:text-xl font-bold bg-gradient-to-r from-sky-600 to-pink-600 bg-clip-text text-transparent whitespace-nowrap">
                 {BG.appTitle}
               </h1>
-              
-              {/* Desktop Inline Legend - Compact */}
-              <div className="hidden lg:flex items-center gap-2 overflow-x-auto no-scrollbar">
-                <CalendarLegend />
-              </div>
             </div>
             
             {/* Right - Menu/Actions */}
@@ -65,11 +59,6 @@ export function CalendarPage() {
                 <MobileMenu onLogout={handleLogout} />
               </div>
             </div>
-          </div>
-          
-          {/* Mobile/Tablet Legend - Compact row below header */}
-          <div className="lg:hidden py-2 border-t border-gray-100">
-            <CalendarLegend />
           </div>
         </div>
       </header>

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { X, Plus, Trash2, Calendar, Baby, Edit, Eye } from 'lucide-react';
 import { api } from '../../lib/api';
 import { toast } from 'sonner';
-import { bracketForAge } from '../../lib/ageColors';
 import { BG } from '../../lib/i18n';
 import { PartyFormModal } from './PartyFormModal';
 import { PartyDetailsModal } from './PartyDetailsModal';
@@ -125,9 +124,8 @@ export function PartyModal({ date, parties, onClose, onPartyCreated, onPartyDele
               <h3 className="text-lg font-semibold text-gray-900 mb-4">{BG.scheduledParties}</h3>
               <div className="space-y-3">
                 {parties.map((party) => {
-                  const bracket = bracketForAge(party.kidAge);
                   return (
-                  <div key={party._id} className={`rounded-lg p-3 border ${bracket.block}`}>
+                  <div key={party._id} className="rounded-lg p-3 border bg-purple-100/80 text-purple-900 ring-1 ring-purple-200/50">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-2">

@@ -2,7 +2,6 @@ import { addWeeks, eachDayOfInterval, endOfWeek, format, startOfWeek, isToday } 
 import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { dayKey, groupByDay } from "../../lib/date";
-import { bracketForAge } from "../../lib/ageColors";
 import { DaySheet } from "./DaySheet";
 import { api } from "../../lib/api";
 import { toast } from "sonner";
@@ -19,8 +18,8 @@ export default function WeekViewMobile() {
     items: Party[];
   }>({ open: false, date: null, items: [] });
 
-  const weekStart = startOfWeek(cursor, { weekStartsOn: 0 });
-  const weekEnd = endOfWeek(cursor, { weekStartsOn: 0 });
+  const weekStart = startOfWeek(cursor, { weekStartsOn: 1 });
+  const weekEnd = endOfWeek(cursor, { weekStartsOn: 1 });
 
   useEffect(() => {
     const fetchParties = async () => {
@@ -192,11 +191,10 @@ export default function WeekViewMobile() {
               {items.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-2.5">
                   {items.slice(0, 3).map((party) => {
-                    const bracket = bracketForAge(party.kidAge);
                     return (
                       <div 
                         key={party._id} 
-                        className={`inline-flex flex-col gap-1 rounded-xl px-3.5 py-2.5 text-sm ${bracket.chip} shadow-sm ring-1 ring-black/5 min-w-[200px]`}
+                        className="inline-flex flex-col gap-1 rounded-xl px-3.5 py-2.5 text-sm bg-purple-100/80 text-purple-900 ring-1 ring-purple-200/50 shadow-sm min-w-[200px]"
                       >
                         <div className="font-bold text-base">
                           {party.kidName} ({party.kidAge}г)

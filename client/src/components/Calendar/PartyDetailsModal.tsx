@@ -1,6 +1,5 @@
 import { X, Calendar, Clock, Users, Baby, ChefHat, User } from 'lucide-react';
 import { BG } from '../../lib/i18n';
-import { bracketForAge } from '../../lib/ageColors';
 
 interface Party {
   _id: string;
@@ -33,8 +32,6 @@ interface PartyDetailsModalProps {
 
 export function PartyDetailsModal({ isOpen, onClose, party, date }: PartyDetailsModalProps) {
   if (!isOpen || !party) return null;
-
-  const bracket = bracketForAge(party.kidAge);
 
   const formatTime = (time: string) => {
     const [hours, minutes] = time.split(':');
@@ -71,7 +68,7 @@ export function PartyDetailsModal({ isOpen, onClose, party, date }: PartyDetails
             </div>
 
             {/* Party Card */}
-            <div className={`rounded-lg p-3 border ${bracket.block}`}>
+            <div className="rounded-lg p-3 border bg-purple-100/80 text-purple-900 ring-1 ring-purple-200/50">
               <div className="flex items-center space-x-2 mb-2">
                 <Baby className="h-4 w-4 text-primary-600" />
                 <span className="font-bold text-gray-900">{party.kidName}</span>

@@ -1,7 +1,6 @@
 import { format } from 'date-fns';
 import { bg } from 'date-fns/locale';
 import { Calendar, Clock, Users2, ChefHat, Info } from 'lucide-react';
-import { bracketForAge } from '../../lib/ageColors';
 
 type PartyDetailsViewProps = {
   party: {
@@ -63,7 +62,6 @@ function KV({ label, value, twoCol = false }: {
 }
 
 export function PartyDetailsView({ party, onEdit, onClose, variant = "dialog" }: PartyDetailsViewProps) {
-  const bracket = bracketForAge(party.kidAge ?? 0);
   const partyDate = typeof party.partyDate === 'string' ? new Date(party.partyDate) : party.partyDate;
   const formattedDate = format(partyDate, "d MMMM yyyy", { locale: bg });
 
@@ -85,7 +83,7 @@ export function PartyDetailsView({ party, onEdit, onClose, variant = "dialog" }:
 
         {/* Summary pill with edit button */}
         <div className="flex items-center justify-between">
-          <div className={`rounded-xl px-4 py-2 text-sm ${bracket.chip} flex-1 mr-3`}>
+          <div className="rounded-xl px-4 py-2 text-sm bg-purple-100/80 text-purple-900 ring-1 ring-purple-200/50 flex-1 mr-3">
             <div className="flex items-center justify-between">
               <div>
                 <span className="font-bold">{party.kidName}</span>

@@ -43,8 +43,8 @@ interface MonthViewProps {
 export function MonthView({ currentDate, onPreviousMonth, onNextMonth, onToday, onDayClick, refreshKey }: MonthViewProps) {
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
-  const gridStart = startOfWeek(monthStart, { weekStartsOn: 0 });
-  const gridEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
+  const gridStart = startOfWeek(monthStart, { weekStartsOn: 1 });
+  const gridEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
 
   const [parties, setParties] = useState<Party[]>([]);
   const [loading, setLoading] = useState(false);
