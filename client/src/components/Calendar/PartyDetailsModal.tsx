@@ -1,4 +1,4 @@
-import { X, Calendar, Clock, Users, Baby, ChefHat, StickyNote, User } from 'lucide-react';
+import { X, Calendar, Clock, Users, Baby, ChefHat, User } from 'lucide-react';
 import { BG } from '../../lib/i18n';
 import { bracketForAge } from '../../lib/ageColors';
 
@@ -19,6 +19,9 @@ interface Party {
   parentsCount?: number;
   kidsCatering?: string;
   parentsCatering?: string;
+  phoneNumber?: string;
+  deposit?: number;
+  partyType?: string;
 }
 
 interface PartyDetailsModalProps {
@@ -84,11 +87,27 @@ export function PartyDetailsModal({ isOpen, onClose, party, date }: PartyDetails
               </div>
               
               <div className="grid grid-cols-1 gap-2 pl-6">
+                {party.partyType && (
+                  <div>
+                    <label className="block text-xs font-medium text-gray-500 mb-1">
+                      Вид
+                    </label>
+                    <p className="text-sm text-gray-900">{party.partyType}</p>
+                  </div>
+                )}
+                
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1">
                     Адрес
                   </label>
-                  <p className="text-sm text-gray-900">{party.locationName}</p>
+                  <p className="text-sm text-gray-900">{party.address || party.locationName || '—'}</p>
+                </div>
+                
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">
+                    Капаро
+                  </label>
+                  <p className="text-sm text-gray-900">{party.deposit ?? 0}€</p>
                 </div>
               </div>
             </div>
@@ -163,7 +182,7 @@ export function PartyDetailsModal({ isOpen, onClose, party, date }: PartyDetails
             )}
 
             {/* Contact Info Section */}
-            {(party.parentName || party.parentEmail) && (
+            {(party.parentName || party.parentEmail || party.phoneNumber) && (
               <div className="space-y-4">
                 <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
                   <User className="h-4 w-4" />
@@ -177,6 +196,15 @@ export function PartyDetailsModal({ isOpen, onClose, party, date }: PartyDetails
                         Име на родителя
                       </label>
                       <p className="text-sm text-gray-900">{party.parentName}</p>
+                    </div>
+                  )}
+
+                  {party.phoneNumber && (
+                    <div>
+                      <label className="block text-xs font-medium text-gray-500 mb-1">
+                        Телефонен номер
+                      </label>
+                      <p className="text-sm text-gray-900">{party.phoneNumber}</p>
                     </div>
                   )}
 
@@ -218,20 +246,6 @@ export function PartyDetailsModal({ isOpen, onClose, party, date }: PartyDetails
                       <p className="text-sm text-gray-900 whitespace-pre-wrap">{party.parentsCatering}</p>
                     </div>
                   )}
-                </div>
-              </div>
-            )}
-
-            {/* Notes Section */}
-            {party.notes && (
-              <div className="space-y-4">
-                <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
-                  <StickyNote className="h-4 w-4" />
-                  <span>Бележки</span>
-                </div>
-                
-                <div className="pl-6">
-                  <p className="text-sm text-gray-900 whitespace-pre-wrap">{party.notes}</p>
                 </div>
               </div>
             )}

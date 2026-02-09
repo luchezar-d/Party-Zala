@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { X, Plus, Clock, MapPin, Users, Mail, User, Trash2, Calendar, Baby, Edit, Eye } from 'lucide-react';
+import { X, Plus, Trash2, Calendar, Baby, Edit, Eye } from 'lucide-react';
 import { api } from '../../lib/api';
-import { formatTime } from '../../lib/date';
 import { toast } from 'sonner';
 import { bracketForAge } from '../../lib/ageColors';
 import { BG } from '../../lib/i18n';
@@ -21,6 +20,9 @@ interface Party {
   parentEmail?: string;
   guestsCount?: number;
   notes?: string;
+  phoneNumber?: string;
+  deposit?: number;
+  partyType?: string;
 }
 
 interface PartyModalProps {
@@ -134,56 +136,24 @@ export function PartyModal({ date, parties, onClose, onPartyCreated, onPartyDele
                           <span className="text-sm text-gray-600">({party.kidAge} {BG.yearsOld})</span>
                         </div>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
-                          <div className="flex items-center space-x-2">
-                            <MapPin className="h-4 w-4" />
-                            <span>{party.locationName}</span>
+                        {/* Always show these fields */}
+                        <div className="space-y-1.5 mb-3">
+                          <div className="text-sm text-gray-700">
+                            <strong>Начален час:</strong> {party.startTime || '—'}
                           </div>
                           
-                          {(party.startTime || party.endTime) && (
-                            <div className="flex items-center space-x-2">
-                              <Clock className="h-4 w-4" />
-                              <span>
-                                {party.startTime && formatTime(party.startTime)}
-                                {party.startTime && party.endTime && ' - '}
-                                {party.endTime && formatTime(party.endTime)}
-                              </span>
-                            </div>
-                          )}
+                          <div className="text-sm text-gray-700">
+                            <strong>Вид:</strong> {party.partyType || '—'}
+                          </div>
                           
-                          {party.parentName && (
-                            <div className="flex items-center space-x-2">
-                              <User className="h-4 w-4" />
-                              <span>{party.parentName}</span>
-                            </div>
-                          )}
+                          <div className="text-sm text-gray-700">
+                            <strong>Адрес:</strong> {party.address || party.locationName || '—'}
+                          </div>
                           
-                          {party.parentEmail && (
-                            <div className="flex items-center space-x-2">
-                              <Mail className="h-4 w-4" />
-                              <span>{party.parentEmail}</span>
-                            </div>
-                          )}
-                          
-                          {party.guestsCount && (
-                            <div className="flex items-center space-x-2">
-                              <Users className="h-4 w-4" />
-                              <span>{party.guestsCount} {party.guestsCount === 1 ? BG.guest : BG.guests}</span>
-                            </div>
-                          )}
+                          <div className="text-sm text-gray-700">
+                            <strong>Капаро:</strong> {party.deposit ?? 0}€
+                          </div>
                         </div>
-                        
-                        {party.address && (
-                          <div className="mt-2 text-sm text-gray-600">
-                            <strong>Адрес:</strong> {party.address}
-                          </div>
-                        )}
-                        
-                        {party.notes && (
-                          <div className="mt-2 text-sm text-gray-600">
-                            <strong>Бележки:</strong> {party.notes}
-                          </div>
-                        )}
                       </div>
                       
                       <div className="flex space-x-2">

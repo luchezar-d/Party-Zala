@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { bg } from 'date-fns/locale';
-import { Calendar, Clock, Users2, ChefHat, StickyNote, Info } from 'lucide-react';
+import { Calendar, Clock, Users2, ChefHat, Info } from 'lucide-react';
 import { bracketForAge } from '../../lib/ageColors';
 
 type PartyDetailsViewProps = {
@@ -17,6 +17,9 @@ type PartyDetailsViewProps = {
     kidsCatering?: string;
     parentsCatering?: string;
     notes?: string;
+    phoneNumber?: string;
+    deposit?: number;
+    partyType?: string;
   };
   onEdit?: () => void;
   onClose: () => void;
@@ -121,12 +124,11 @@ export function PartyDetailsView({ party, onEdit, onClose, variant = "dialog" }:
       {/* Row 2: Scrollable Content */}
       <div className="overflow-y-auto px-6 pb-6 pt-4 space-y-8">
         {/* Basic Info Section */}
-        {(party.locationName || party.address) && (
-          <Section icon={Info} title="Основна информация">
-            <KV label="Адрес" value={party.locationName} />
-            <KV label="Адрес" value={party.address} />
-          </Section>
-        )}
+        <Section icon={Info} title="Основна информация">
+          {party.partyType && <KV label="Вид" value={party.partyType} />}
+          <KV label="Адрес" value={party.address || party.locationName || '—'} />
+          <KV label="Капаро" value={`${party.deposit ?? 0}€`} />
+        </Section>
 
         {/* Time Section */}
         {(party.startTime || party.endTime) && (
@@ -171,15 +173,6 @@ export function PartyDetailsView({ party, onEdit, onClose, variant = "dialog" }:
                 </ul>
               </div>
             )}
-          </Section>
-        )}
-
-        {/* Notes Section */}
-        {party.notes && (
-          <Section icon={StickyNote} title="Бележки">
-            <div className="text-[15px] md:text-base whitespace-pre-wrap">
-              {party.notes}
-            </div>
           </Section>
         )}
       </div>

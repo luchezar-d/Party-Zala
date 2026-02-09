@@ -48,14 +48,26 @@ export function DayCell({ date, isOtherMonth, parties, onClick }: DayCellProps) 
               <div
                 key={p._id}
                 className={clsx(
-                  "flex items-center gap-1.5 truncate rounded-xl px-2 py-1 text-xs ring-1",
+                  "flex flex-col gap-0.5 truncate rounded-xl px-2 py-1.5 text-xs ring-1",
                   bracket.chip
                 )}
               >
-                <CalendarClock className="size-3 shrink-0" />
-                <span className="truncate">
-                  {(p.startTime ?? "—")} · {p.kidName}
-                </span>
+                <div className="flex items-center gap-1.5 truncate">
+                  <CalendarClock className="size-3 shrink-0" />
+                  <span className="truncate font-semibold">
+                    {(p.startTime ?? "—")} · {p.kidName} ({p.kidAge}г)
+                  </span>
+                </div>
+                {(p.partyType || p.address) && (
+                  <div className="text-[10px] opacity-75 truncate ml-[18px]">
+                    {p.partyType && <span>{p.partyType}</span>}
+                    {p.partyType && p.address && <span> · </span>}
+                    {p.address && <span>{p.address}</span>}
+                  </div>
+                )}
+                <div className="text-[10px] opacity-75 ml-[18px]">
+                  Капаро: {p.deposit ?? 0}€
+                </div>
               </div>
             );
           })}

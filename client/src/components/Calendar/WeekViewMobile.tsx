@@ -196,15 +196,17 @@ export default function WeekViewMobile() {
                     return (
                       <div 
                         key={party._id} 
-                        className={`inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-sm ${bracket.chip} shadow-sm ring-1 ring-black/5`}
+                        className={`inline-flex flex-col gap-1 rounded-xl px-3.5 py-2.5 text-sm ${bracket.chip} shadow-sm ring-1 ring-black/5 min-w-[200px]`}
                       >
-                        <span className="text-xs opacity-80 font-semibold">
-                          {party.startTime ?? "—"}
-                        </span>
-                        <span className="font-semibold">{party.kidName}</span>
-                        {typeof party.kidAge === "number" && (
-                          <span className="text-xs opacity-75 font-medium">({party.kidAge}г)</span>
-                        )}
+                        <div className="font-bold text-base">
+                          {party.kidName} ({party.kidAge}г)
+                        </div>
+                        <div className="text-xs opacity-80 space-y-0.5">
+                          <div>Начален час: {party.startTime ?? "—"}</div>
+                          <div>Вид: {party.partyType || "—"}</div>
+                          <div>Адрес: {party.address || party.locationName || "—"}</div>
+                          <div>Капаро: {party.deposit ?? 0}€</div>
+                        </div>
                       </div>
                     );
                   })}

@@ -65,17 +65,27 @@ export function DaySheet({ open, onOpenChange, date, items = [], onPartyUpdated 
                     className={`flex items-center justify-between rounded-2xl px-4 py-4 ${bracket.block} border border-opacity-20 shadow-md min-h-[64px] hover:shadow-lg transition-shadow`}
                   >
                     <div className="flex items-center gap-3 flex-1">
-                      <div className="text-sm font-bold opacity-80 min-w-[3rem]">
-                        {party.startTime || "—"}
-                      </div>
                       <div className="flex-1">
                         <div className="font-bold text-gray-900">{party.kidName}</div>
                         {typeof party.kidAge === "number" && (
                           <div className="text-sm font-medium opacity-75">{party.kidAge} {BG.yearsOld}</div>
                         )}
-                        {party.locationName && (
-                          <div className="text-sm font-medium opacity-75 mt-0.5">{party.locationName}</div>
-                        )}
+                        
+                        {/* Always show these fields */}
+                        <div className="space-y-0.5 mt-1.5">
+                          <div className="text-sm font-medium opacity-75">
+                            Начален час: {party.startTime || "—"}
+                          </div>
+                          <div className="text-sm font-medium opacity-75">
+                            Вид: {party.partyType || "—"}
+                          </div>
+                          <div className="text-sm font-medium opacity-75">
+                            Адрес: {party.address || party.locationName || "—"}
+                          </div>
+                          <div className="text-sm font-medium opacity-75">
+                            Капаро: {party.deposit ?? 0}€
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <button
