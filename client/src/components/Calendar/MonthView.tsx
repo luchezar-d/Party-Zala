@@ -1,4 +1,4 @@
-import { eachDayOfInterval, endOfMonth, endOfWeek, format, isSameMonth, startOfMonth, startOfWeek } from "date-fns";
+import { eachDayOfInterval, endOfMonth, format, isSameMonth, startOfMonth } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
 import { groupByDay, dayKey } from "../../lib/date";
 import { DayCell } from "./DayCell.tsx";
@@ -43,9 +43,8 @@ interface MonthViewProps {
 export function MonthView({ currentDate, onPreviousMonth, onNextMonth, onToday, onDayClick, refreshKey }: MonthViewProps) {
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
-  const gridStart = startOfWeek(monthStart, { weekStartsOn: 1 });
-  const gridEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
-
+  
+  // Only fetch and display parties for the current month
   const [parties, setParties] = useState<Party[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -53,8 +52,8 @@ export function MonthView({ currentDate, onPreviousMonth, onNextMonth, onToday, 
     const fetchParties = async () => {
       setLoading(true);
       try {
-        const from = format(gridStart, 'yyyy-MM-dd');
-        const to = format(gridEnd, 'yyyy-MM-dd');
+        const from = format(monthStart, 'yyyy-MM-dd');
+        const to = format(monthEnd, 'yyyy-MM-dd');
         const response = await api.get(`/parties?from=${from}&to=${to}`);
         setParties(response.data);
       } catch (error: any) {
@@ -70,13 +69,19 @@ export function MonthView({ currentDate, onPreviousMonth, onNextMonth, onToday, 
     };
 
     fetchParties();
-  }, [gridStart.toISOString(), gridEnd.toISOString(), refreshKey]);
+  }, [monthStart.toISOString(), monthEnd.toISOString(), refreshKey]);
 
   const byDay = useMemo(() => groupByDay(parties), [parties]);
+  
+  // Only show days that belong to the current month
   const days = useMemo(
-    () => eachDayOfInterval({ start: gridStart, end: gridEnd }),
-    [gridStart.toISOString(), gridEnd.toISOString()]
+    () => eachDayOfInterval({ start: monthStart, end: monthEnd }),
+    [monthStart.toISOString(), monthEnd.toISOString()]
   );
+
+  // Calculate which day of week the month starts on (0 = Sunday, 1 = Monday, etc.)
+  // We use weekStartsOn: 1 (Monday), so we need to adjust
+  const firstDayOfWeek = (monthStart.getDay() + 6) % 7; // Convert to Monday-first (0 = Monday, 6 = Sunday)
 
   if (loading) {
     return (
@@ -132,6 +137,12 @@ export function MonthView({ currentDate, onPreviousMonth, onNextMonth, onToday, 
 
         {/* Days */}
         <div className="grid grid-cols-7 gap-4 p-8">
+          {/* Empty cells for days before the first day of the month */}
+          {Array.from({ length: firstDayOfWeek }).map((_, i) => (
+            <div key={`empty-${i}`} />
+          ))}
+          
+          {/* Actual days of the month */}
           {days.map((date) => (
             <DayCell
               key={date.toISOString()}
