@@ -109,10 +109,16 @@ export const BG = {
   },
   
   formatWeekday: (date: Date) => {
-    return BG.weekdays[date.getDay()];
+    // getDay() returns 0 (Sunday) to 6 (Saturday)
+    // We need to convert to Monday-first: 0=Monday, 1=Tuesday, etc.
+    const dayIndex = (date.getDay() + 6) % 7; // Convert Sunday (0) to 6, Monday (1) to 0, etc.
+    return BG.weekdays[dayIndex];
   },
   
   formatWeekdayShort: (date: Date) => {
-    return BG.weekdaysShort[date.getDay()];
+    // getDay() returns 0 (Sunday) to 6 (Saturday)
+    // We need to convert to Monday-first: 0=Monday, 1=Tuesday, etc.
+    const dayIndex = (date.getDay() + 6) % 7; // Convert Sunday (0) to 6, Monday (1) to 0, etc.
+    return BG.weekdaysShort[dayIndex];
   }
 };

@@ -200,12 +200,27 @@ export async function deletePartiesInRange(req: Request, res: Response) {
     const fromDate = new Date(from + 'T00:00:00.000Z');
     const toDate = new Date(to + 'T23:59:59.999Z');
 
+    console.log('Delete range request:', { from, to, fromDate, toDate });
+
+    // First, find parties in the range to see what we're deleting
+    const partiesToDelete = await Party.find({
+      partyDate: {
+        $gte: fromDate,
+        $lte: toDate
+      }
+    });
+
+    console.log('Parties found in range:', partiesToDelete.length);
+    console.log('Party dates:', partiesToDelete.map(p => ({ id: p._id, date: p.partyDate, kidName: p.kidName })));
+
     const result = await Party.deleteMany({
       partyDate: {
         $gte: fromDate,
         $lte: toDate
       }
     });
+
+    console.log('Delete result:', result);
 
     res.json({ 
       message: 'Parties deleted successfully',

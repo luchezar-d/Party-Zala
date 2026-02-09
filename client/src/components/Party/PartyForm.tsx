@@ -338,7 +338,7 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Брой деца
+                Брой деца <span className="text-red-600">*</span>
               </label>
               <input
                 {...register('kidsCount', { valueAsNumber: true })}
@@ -354,7 +354,7 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Брой родители
+                Брой родители <span className="text-red-600">*</span>
               </label>
               <input
                 {...register('parentsCount', { valueAsNumber: true })}

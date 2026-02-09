@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Search, Filter, Calendar, MapPin, Baby, Edit, Trash2, AlertTriangle, ArrowLeft, X, Download } from 'lucide-react';
+import { Search, Filter, Calendar, MapPin, Baby, Edit, Trash2, AlertTriangle, ArrowLeft, X, Download, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { toast } from 'sonner';
@@ -17,7 +17,10 @@ export function AllPartiesPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [editingParty, setEditingParty] = useState<Party | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<{type: 'all' | 'lastMonth' | 'single', partyId?: string} | null>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<{type: 'all' | 'month' | 'single', partyId?: string, month?: string} | null>(null);
+  const [showDeleteDropdown, setShowDeleteDropdown] = useState(false);
+  const [showMonthSelector, setShowMonthSelector] = useState(false);
+  const [confirmText, setConfirmText] = useState('');
 
   useEffect(() => {
     fetchAllParties();
@@ -47,6 +50,7 @@ export function AllPartiesPage() {
       toast.success('Партито е изтрито успешно');
       fetchAllParties();
       setShowDeleteConfirm(null);
+      setConfirmText('');
     } catch (error) {
       console.error('Error deleting party:', error);
       toast.error('Грешка при изтриване на партито');
@@ -59,47 +63,38 @@ export function AllPartiesPage() {
       toast.success(`Изтрити са ${response.data.deletedCount} партита`);
       fetchAllParties();
       setShowDeleteConfirm(null);
+      setConfirmText('');
     } catch (error) {
       console.error('Error deleting all parties:', error);
       toast.error('Грешка при изтриване на партитата');
     }
   };
 
-  const handleDeleteLastMonth = async () => {
+  const handleDeleteByMonth = async (yearMonth: string) => {
     try {
-      const today = new Date();
-      const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-      const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
+      const [year, month] = yearMonth.split('-').map(Number);
+      const monthStart = new Date(year, month - 1, 1);
+      const monthEnd = new Date(year, month, 0, 23, 59, 59, 999); // Last moment of last day
       
-      const from = lastMonthEnd.toISOString().split('T')[0];
-      const to = lastMonthStart.toISOString().split('T')[0];
+      const from = monthStart.toISOString().split('T')[0];
+      const to = monthEnd.toISOString().split('T')[0];
       
-      const response = await api.delete(`/parties/range?from=${to}&to=${from}`);
-      toast.success(`Изтрити са ${response.data.deletedCount} партита от миналия месец`);
-      fetchAllParties();
-      setShowDeleteConfirm(null);
-    } catch (error) {
-      console.error('Error deleting last month parties:', error);
-      toast.error('Грешка при изтриване на партитата');
-    }
-  };
-
-  const handleDeleteOld = async () => {
-    try {
-      const today = new Date();
-      const oldDate = new Date('2000-01-01');
-      const yesterday = new Date(today);
-      yesterday.setDate(yesterday.getDate() - 1);
-      
-      const from = oldDate.toISOString().split('T')[0];
-      const to = yesterday.toISOString().split('T')[0];
+      console.log('Deleting parties for month:', { yearMonth, from, to, month, year });
       
       const response = await api.delete(`/parties/range?from=${from}&to=${to}`);
-      toast.success(`Изтрити са ${response.data.deletedCount} минали партита`);
+      
+      if (response.data.deletedCount === 0) {
+        toast.warning(`Няма партита за изтриване от ${BG.months[month - 1]} ${year}`);
+      } else {
+        toast.success(`Изтрити са ${response.data.deletedCount} партита от ${BG.months[month - 1]} ${year}`);
+      }
+      
       fetchAllParties();
       setShowDeleteConfirm(null);
+      setShowMonthSelector(false);
+      setConfirmText('');
     } catch (error) {
-      console.error('Error deleting old parties:', error);
+      console.error('Error deleting month parties:', error);
       toast.error('Грешка при изтриване на партитата');
     }
   };
@@ -275,31 +270,49 @@ export function AllPartiesPage() {
 
       {/* Search and Filters */}
       <div className="space-y-3">
-        {/* Bulk Actions */}
-        <div className="flex flex-wrap gap-2">
+        {/* Bulk Delete Dropdown */}
+        <div className="relative">
           <button
-            onClick={() => setShowDeleteConfirm({ type: 'lastMonth' })}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-orange-100 text-orange-700 hover:bg-orange-200 transition-all border-2 border-orange-200"
+            onClick={() => setShowDeleteDropdown(!showDeleteDropdown)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-red-50 text-red-700 hover:bg-red-100 transition-all border-2 border-red-200"
           >
             <Trash2 className="h-4 w-4" />
-            Изтрий миналия месец
+            Изтрий партита
+            <ChevronDown className={`h-4 w-4 transition-transform ${showDeleteDropdown ? 'rotate-180' : ''}`} />
           </button>
-          
-          <button
-            onClick={() => setShowDeleteConfirm({ type: 'all', partyId: 'old' })}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-amber-100 text-amber-700 hover:bg-amber-200 transition-all border-2 border-amber-200"
-          >
-            <Trash2 className="h-4 w-4" />
-            Изтрий минали партита
-          </button>
-          
-          <button
-            onClick={() => setShowDeleteConfirm({ type: 'all' })}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm bg-red-100 text-red-700 hover:bg-red-200 transition-all border-2 border-red-200"
-          >
-            <AlertTriangle className="h-4 w-4" />
-            Изтрий ВСИЧКИ
-          </button>
+
+          {/* Dropdown Menu */}
+          {showDeleteDropdown && (
+            <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-xl shadow-lg border-2 border-gray-200 z-10 overflow-hidden">
+              <button
+                onClick={() => {
+                  setShowMonthSelector(true);
+                  setShowDeleteDropdown(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-orange-50 transition-all text-left border-b border-gray-100"
+              >
+                <Calendar className="h-4 w-4 text-orange-600" />
+                <div>
+                  <div className="font-semibold text-sm text-gray-900">Изтрий по месец</div>
+                  <div className="text-xs text-gray-500">Избери месец за изтриване на партита</div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => {
+                  setShowDeleteConfirm({ type: 'all' });
+                  setShowDeleteDropdown(false);
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-all text-left"
+              >
+                <AlertTriangle className="h-4 w-4 text-red-600" />
+                <div>
+                  <div className="font-semibold text-sm text-gray-900">ВСИЧКИ партита</div>
+                  <div className="text-xs text-gray-500">Изтрий абсолютно всички партита</div>
+                </div>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Search Bar */}
@@ -480,28 +493,105 @@ export function AllPartiesPage() {
         </div>
       )}
 
+      {/* Month Selector Modal */}
+      {showMonthSelector && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/50" onClick={() => setShowMonthSelector(false)}>
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-12 w-12 rounded-full bg-orange-100 flex items-center justify-center">
+                <Calendar className="h-6 w-6 text-orange-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Избери месец</h3>
+                <p className="text-sm text-gray-600">Изтрий всички партита от избрания месец</p>
+              </div>
+            </div>
+            
+            <input
+              type="month"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all font-medium mb-4"
+              onChange={(e) => {
+                if (e.target.value) {
+                  setShowDeleteConfirm({ type: 'month', month: e.target.value });
+                  setShowMonthSelector(false);
+                }
+              }}
+            />
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowMonthSelector(false)}
+                className="flex-1 px-4 py-3 rounded-xl font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-all"
+              >
+                Отказ
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/50" onClick={() => setShowDeleteConfirm(null)}>
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/50" onClick={() => {
+          setShowDeleteConfirm(null);
+          setConfirmText('');
+        }}>
           <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-3 mb-4">
               <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
                 <AlertTriangle className="h-6 w-6 text-red-600" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900">Потвърдете изтриването</h3>
-                <p className="text-sm text-gray-600">
-                  {showDeleteConfirm.type === 'all' && showDeleteConfirm.partyId === 'old' && 'Ще бъдат изтрити всички минали партита'}
-                  {showDeleteConfirm.type === 'all' && !showDeleteConfirm.partyId && 'Ще бъдат изтрити ВСИЧКИ партита'}
-                  {showDeleteConfirm.type === 'lastMonth' && 'Ще бъдат изтрити партитата от миналия месец'}
+                <h3 className="text-lg font-bold text-gray-900">⚠️ ВНИМАНИЕ!</h3>
+                <p className="text-sm font-semibold text-red-600">
+                  {showDeleteConfirm.type === 'all' && 'Това действие НЕ може да бъде отменено!'}
+                  {showDeleteConfirm.type === 'month' && 'Това действие НЕ може да бъде отменено!'}
                   {showDeleteConfirm.type === 'single' && 'Ще бъде изтрито това парти'}
                 </p>
               </div>
             </div>
             
+            <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4 mb-4">
+              <p className="text-sm text-gray-700 mb-2">
+                {showDeleteConfirm.type === 'all' && (
+                  <>
+                    <strong>Ще бъдат изтрити ВСИЧКИ ({parties.length}) партита</strong> от системата завинаги.
+                    <br />Моля, бъдете много внимателни!
+                  </>
+                )}
+                {showDeleteConfirm.type === 'month' && showDeleteConfirm.month && (
+                  <>
+                    Ще бъдат изтрити всички партита от <strong>{showDeleteConfirm.month}</strong>.
+                    <br />Моля, потвърдете, че искате да продължите.
+                  </>
+                )}
+                {showDeleteConfirm.type === 'single' && 'Това парти ще бъде изтрито от системата.'}
+              </p>
+            </div>
+
+            {/* Type confirmation for bulk deletes */}
+            {(showDeleteConfirm.type === 'all' || showDeleteConfirm.type === 'month') && (
+              <div className="mb-4">
+                <label className="block text-sm font-bold text-gray-700 mb-2">
+                  Напишете "<span className="text-red-600">ИЗТРИЙ</span>" за потвърждение:
+                </label>
+                <input
+                  type="text"
+                  value={confirmText}
+                  onChange={(e) => setConfirmText(e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all font-medium"
+                  placeholder="ИЗТРИЙ"
+                  autoFocus
+                />
+              </div>
+            )}
+            
             <div className="flex gap-3">
               <button
-                onClick={() => setShowDeleteConfirm(null)}
+                onClick={() => {
+                  setShowDeleteConfirm(null);
+                  setConfirmText('');
+                }}
                 className="flex-1 px-4 py-3 rounded-xl font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition-all"
               >
                 Отказ
@@ -510,17 +600,24 @@ export function AllPartiesPage() {
                 onClick={() => {
                   if (showDeleteConfirm.type === 'single' && showDeleteConfirm.partyId) {
                     handleDeleteParty(showDeleteConfirm.partyId);
-                  } else if (showDeleteConfirm.type === 'lastMonth') {
-                    handleDeleteLastMonth();
-                  } else if (showDeleteConfirm.type === 'all' && showDeleteConfirm.partyId === 'old') {
-                    handleDeleteOld();
+                  } else if (showDeleteConfirm.type === 'month' && showDeleteConfirm.month) {
+                    if (confirmText === 'ИЗТРИЙ') {
+                      handleDeleteByMonth(showDeleteConfirm.month);
+                    } else {
+                      toast.error('Моля напишете "ИЗТРИЙ" за потвърждение');
+                    }
                   } else if (showDeleteConfirm.type === 'all') {
-                    handleDeleteAll();
+                    if (confirmText === 'ИЗТРИЙ') {
+                      handleDeleteAll();
+                    } else {
+                      toast.error('Моля напишете "ИЗТРИЙ" за потвърждение');
+                    }
                   }
                 }}
-                className="flex-1 px-4 py-3 rounded-xl font-semibold text-white bg-red-600 hover:bg-red-700 transition-all shadow-md"
+                disabled={(showDeleteConfirm.type === 'all' || showDeleteConfirm.type === 'month') && confirmText !== 'ИЗТРИЙ'}
+                className="flex-1 px-4 py-3 rounded-xl font-semibold text-white bg-red-600 hover:bg-red-700 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Изтрий
+                {showDeleteConfirm.type === 'single' ? 'Изтрий' : 'Изтрий завинаги'}
               </button>
             </div>
           </div>
