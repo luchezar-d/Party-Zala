@@ -86,19 +86,10 @@ export function PartyDetailsModal({ isOpen, onClose, party, date }: PartyDetails
               <div className="grid grid-cols-1 gap-2 pl-6">
                 <div>
                   <label className="block text-xs font-medium text-gray-500 mb-1">
-                    Местоположение
+                    Адрес
                   </label>
                   <p className="text-sm text-gray-900">{party.locationName}</p>
                 </div>
-
-                {party.address && (
-                  <div>
-                    <label className="block text-xs font-medium text-gray-500 mb-1">
-                      Адрес
-                    </label>
-                    <p className="text-sm text-gray-900">{party.address}</p>
-                  </div>
-                )}
               </div>
             </div>
 

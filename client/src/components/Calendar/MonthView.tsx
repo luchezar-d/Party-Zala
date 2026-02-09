@@ -20,6 +20,13 @@ export interface Party {
   parentEmail?: string;
   guestsCount?: number;
   notes?: string;
+  kidsCount?: number;
+  parentsCount?: number;
+  kidsCatering?: string;
+  parentsCatering?: string;
+  phoneNumber: string;
+  deposit?: number;
+  partyType?: string;
   createdAt?: string;
   updatedAt?: string;
 }

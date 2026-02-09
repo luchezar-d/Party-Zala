@@ -19,6 +19,11 @@ export interface IParty extends Document {
   kidsCatering?: string;            // Кетъринг за децата
   parentsCatering?: string;         // Кетъринг за родителите
   
+  // New fields for contact and payment
+  phoneNumber: string;              // Тел. Номер (required)
+  deposit?: number;                 // Капаро (optional)
+  partyType?: string;               // Вид (Външно парти, Пейнтбол, Детска зала)
+  
   createdBy: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -100,6 +105,24 @@ const partySchema = new Schema<IParty>({
   parentsCatering: {
     type: String,
     maxlength: 1000
+  },
+  
+  // New fields for contact and payment
+  phoneNumber: {
+    type: String,
+    required: true,
+    trim: true,
+    maxlength: 50
+  },
+  deposit: {
+    type: Number,
+    min: 0,
+    max: 100000
+  },
+  partyType: {
+    type: String,
+    enum: ['Външно парти', 'Пейнтбол', 'Детска зала', ''],
+    default: ''
   },
   
   createdBy: {

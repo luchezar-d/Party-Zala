@@ -33,6 +33,12 @@ export async function listPartiesInRange(req: Request, res: Response) {
 
 export async function createParty(req: Request, res: Response) {
   try {
+    // Debug logging
+    console.log('Received party data:', req.body);
+    console.log('partyType from request:', req.body.partyType);
+    console.log('deposit from request:', req.body.deposit);
+    console.log('phoneNumber from request:', req.body.phoneNumber);
+    
     // MVP: Auth disabled - skip user check and use default admin user
     // TODO: Re-enable auth for production with external users
     /* COMMENTED OUT FOR MVP - KEEP FOR FUTURE USE
@@ -52,6 +58,9 @@ export async function createParty(req: Request, res: Response) {
       createdBy: defaultUserId // MVP: Use default admin user instead of req.user._id
     };
 
+    console.log('Party data before save:', partyData);
+    console.log('partyType in partyData:', partyData.partyType);
+
     // Remove empty optional fields
     if (partyData.parentEmail === '') {
       delete partyData.parentEmail;
@@ -59,6 +68,9 @@ export async function createParty(req: Request, res: Response) {
 
     const party = new Party(partyData);
     await party.save();
+
+    console.log('Saved party:', party.toJSON());
+    console.log('Saved partyType:', party.partyType);
 
     res.status(201).json(party);
   } catch (error: any) {

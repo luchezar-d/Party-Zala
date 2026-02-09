@@ -23,7 +23,12 @@ export const createPartySchema = z.object({
   kidsCount: z.number().int().min(0, 'Броят деца не може да е отрицателен').max(500, 'Броят деца не може да е повече от 500').optional(),
   parentsCount: z.number().int().min(0, 'Броят родители не може да е отрицателен').max(500, 'Броят родители не може да е повече от 500').optional(),
   kidsCatering: z.string().max(1000, 'Кетърингът за децата не може да е повече от 1000 символа').optional(),
-  parentsCatering: z.string().max(1000, 'Кетърингът за родителите не може да е повече от 1000 символа').optional()
+  parentsCatering: z.string().max(1000, 'Кетърингът за родителите не може да е повече от 1000 символа').optional(),
+  
+  // Contact and payment fields
+  phoneNumber: z.string().min(1, 'Телефонният номер е задължителен').max(50, 'Телефонният номер не може да е повече от 50 символа'),
+  deposit: z.number().min(0, 'Капарото не може да е отрицателно').optional(),
+  partyType: z.enum(['Външно парти', 'Пейнтбол', 'Детска зала', '']).optional()
 });
 
 export const listPartiesSchema = z.object({

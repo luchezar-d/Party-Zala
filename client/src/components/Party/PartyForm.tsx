@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Calendar, Clock, Users, Baby, ChefHat, StickyNote } from 'lucide-react';
+import { Calendar, Clock, Users, Baby, ChefHat, StickyNote, Phone } from 'lucide-react';
 import { partySchema, type PartyFormData } from '../../validators/party';
 import { api } from '../../lib/api';
 import { formatDateForAPI } from '../../lib/date';
@@ -25,6 +25,9 @@ interface Party {
   parentsCount?: number;
   kidsCatering?: string;
   parentsCatering?: string;
+  phoneNumber: string;
+  deposit?: number;
+  partyType?: string;
 }
 
 interface PartyFormProps {
@@ -37,7 +40,11 @@ interface PartyFormProps {
 export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyFormProps) {
   const [submitting, setSubmitting] = useState(false);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<PartyFormData>({
+  // Debug: Log the editing party data
+  console.log('PartyForm editingParty:', editingParty);
+  console.log('PartyForm partyType value:', editingParty?.partyType);
+
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<PartyFormData>({
     resolver: zodResolver(partySchema),
     defaultValues: editingParty ? {
       partyDate: formatDateForAPI(new Date(editingParty.partyDate)),
@@ -46,15 +53,16 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
       locationName: editingParty.locationName,
       startTime: editingParty.startTime || '',
       endTime: editingParty.endTime || '',
-      address: editingParty.address || '',
       parentName: editingParty.parentName || '',
       parentEmail: editingParty.parentEmail || '',
-      guestsCount: editingParty.guestsCount,
       notes: editingParty.notes || '',
       kidsCount: editingParty.kidsCount,
       parentsCount: editingParty.parentsCount,
       kidsCatering: editingParty.kidsCatering || '',
       parentsCatering: editingParty.parentsCatering || '',
+      phoneNumber: editingParty.phoneNumber || '',
+      deposit: editingParty.deposit,
+      partyType: (editingParty.partyType || '') as '' | 'Външно парти' | 'Пейнтбол' | 'Детска зала',
     } : {
       partyDate: formatDateForAPI(date),
       kidName: '',
@@ -62,30 +70,66 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
       locationName: '',
       startTime: '',
       endTime: '',
-      address: '',
       parentName: '',
       parentEmail: '',
       notes: '',
       kidsCatering: '',
       parentsCatering: '',
+      phoneNumber: '',
+      partyType: '' as '',
     }
   });
 
+  // Reset form when editingParty changes
+  useEffect(() => {
+    if (editingParty) {
+      reset({
+        partyDate: formatDateForAPI(new Date(editingParty.partyDate)),
+        kidName: editingParty.kidName,
+        kidAge: editingParty.kidAge,
+        locationName: editingParty.locationName,
+        startTime: editingParty.startTime || '',
+        endTime: editingParty.endTime || '',
+        parentName: editingParty.parentName || '',
+        parentEmail: editingParty.parentEmail || '',
+        notes: editingParty.notes || '',
+        kidsCount: editingParty.kidsCount,
+        parentsCount: editingParty.parentsCount,
+        kidsCatering: editingParty.kidsCatering || '',
+        parentsCatering: editingParty.parentsCatering || '',
+        phoneNumber: editingParty.phoneNumber || '',
+        deposit: editingParty.deposit,
+        partyType: (editingParty.partyType || '') as '' | 'Външно парти' | 'Пейнтбол' | 'Детска зала',
+      });
+    }
+  }, [editingParty, reset]);
+
   const onSubmit = async (data: PartyFormData) => {
     setSubmitting(true);
+    
+    // Debug logging
+    console.log('Form data before processing:', data);
+    console.log('partyType value:', data.partyType);
+    console.log('partyType type:', typeof data.partyType);
+    
     try {
       const payload = {
         ...data,
-        // Convert empty strings to undefined
+        // Convert empty strings to undefined for optional fields
         startTime: data.startTime || undefined,
         endTime: data.endTime || undefined,
-        address: data.address || undefined,
         parentName: data.parentName || undefined,
         parentEmail: data.parentEmail || undefined,
         notes: data.notes || undefined,
         kidsCatering: data.kidsCatering || undefined,
         parentsCatering: data.parentsCatering || undefined,
+        // phoneNumber is now required, so don't convert to undefined
+        // Keep partyType value even if it's an empty string (valid option)
+        // deposit is already included via spread
       };
+
+      console.log('Payload being sent:', payload);
+      console.log('Payload partyType:', payload.partyType);
 
       if (editingParty) {
         await api.put(`/parties/${editingParty._id}`, payload);
@@ -134,7 +178,7 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
             {/* Kid Name */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Име *
+                Име <span className="text-red-600">*</span>
               </label>
               <input
                 {...register('kidName')}
@@ -150,7 +194,7 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
             {/* Kid Age */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Години *
+                Години <span className="text-red-600">*</span>
               </label>
               <input
                 {...register('kidAge', { valueAsNumber: true })}
@@ -165,19 +209,82 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
               )}
             </div>
 
-            {/* Location */}
+            {/* Party Type */}
             <div className="md:col-span-2">
               <label className="block text-sm font-semibold text-gray-700 mb-1.5">
-                Местоположение *
+                Вид
+              </label>
+              <select
+                {...register('partyType')}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 font-medium bg-white cursor-pointer hover:border-gray-300"
+              >
+                <option value="">Изберете вид парти</option>
+                <option value="Външно парти">Външно парти</option>
+                <option value="Пейнтбол">Пейнтбол</option>
+                <option value="Детска зала">Детска зала</option>
+              </select>
+              {errors.partyType && (
+                <p className="mt-1.5 text-sm text-red-600 font-medium">{errors.partyType.message}</p>
+              )}
+            </div>
+
+            {/* Location (renamed from Местоположение to Адрес) */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                Адрес <span className="text-red-600">*</span>
               </label>
               <input
                 {...register('locationName')}
                 type="text"
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 font-medium"
-                placeholder="HappyKids Center, градски парк"
+                placeholder="HappyKids Center, градски парк, ул. Примерна 123"
               />
               {errors.locationName && (
                 <p className="mt-1.5 text-sm text-red-600 font-medium">{errors.locationName.message}</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Contact & Payment Section */}
+        <div className="space-y-4">
+          <div className="flex items-center space-x-2 text-sm font-bold text-gray-800">
+            <Phone className="h-4 w-4" />
+            <span>Контакт и плащане</span>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Phone Number */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                Тел. Номер <span className="text-red-600">*</span>
+              </label>
+              <input
+                {...register('phoneNumber')}
+                type="tel"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 font-medium"
+                placeholder="+359 888 123 456"
+              />
+              {errors.phoneNumber && (
+                <p className="mt-1.5 text-sm text-red-600 font-medium">{errors.phoneNumber.message}</p>
+              )}
+            </div>
+
+            {/* Deposit */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                Капаро (€)
+              </label>
+              <input
+                {...register('deposit', { valueAsNumber: true })}
+                type="number"
+                min="0"
+                step="0.01"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 font-medium"
+                placeholder="100"
+              />
+              {errors.deposit && (
+                <p className="mt-1.5 text-sm text-red-600 font-medium">{errors.deposit.message}</p>
               )}
             </div>
           </div>
@@ -198,7 +305,7 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
               <input
                 {...register('startTime')}
                 type="time"
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 font-medium"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 font-medium [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:hover:opacity-100 [&::-webkit-calendar-picker-indicator]:transition-opacity"
               />
               {errors.startTime && (
                 <p className="mt-1.5 text-sm text-red-600 font-medium">{errors.startTime.message}</p>
@@ -212,7 +319,7 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
               <input
                 {...register('endTime')}
                 type="time"
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 font-medium"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 font-medium [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60 [&::-webkit-calendar-picker-indicator]:hover:opacity-100 [&::-webkit-calendar-picker-indicator]:transition-opacity"
               />
               {errors.endTime && (
                 <p className="mt-1.5 text-sm text-red-600 font-medium">{errors.endTime.message}</p>

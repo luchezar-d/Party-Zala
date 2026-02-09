@@ -123,7 +123,7 @@ export function PartyDetailsView({ party, onEdit, onClose, variant = "dialog" }:
         {/* Basic Info Section */}
         {(party.locationName || party.address) && (
           <Section icon={Info} title="Основна информация">
-            <KV label="Местоположение" value={party.locationName} />
+            <KV label="Адрес" value={party.locationName} />
             <KV label="Адрес" value={party.address} />
           </Section>
         )}

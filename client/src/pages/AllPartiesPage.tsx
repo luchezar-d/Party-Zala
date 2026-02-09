@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Search, Filter, Calendar, MapPin, Baby, Edit, Trash2, AlertTriangle, ArrowLeft, X } from 'lucide-react';
+import { Search, Filter, Calendar, MapPin, Baby, Edit, Trash2, AlertTriangle, ArrowLeft, X, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
 import { toast } from 'sonner';
@@ -152,6 +152,90 @@ export function AllPartiesPage() {
     fetchAllParties();
   };
 
+  const exportToCSV = () => {
+    if (filteredAndSortedParties.length === 0) {
+      toast.error('Няма партита за експортиране');
+      return;
+    }
+
+    // Create CSV header with all available fields
+    const headers = [
+      '№',
+      'Дата', 
+      'Начало', 
+      'Край',
+      'Вид',
+      'Име на детето', 
+      'Години', 
+      'Адрес',
+      'Тел. Номер',
+      'Капаро (€)',
+      'Брой деца',
+      'Брой родители',
+      'Кетъринг деца',
+      'Кетъринг родители',
+      'Бележки',
+      'Създадено на'
+    ];
+    
+    // Create CSV rows with all fields
+    const rows = filteredAndSortedParties.map((party, index) => {
+      const partyDate = new Date(party.partyDate);
+      const formattedDate = BG.formatDate(partyDate);
+      
+      // Format created date
+      const createdDate = party.createdAt ? new Date(party.createdAt) : null;
+      const formattedCreatedDate = createdDate 
+        ? `${createdDate.getDate().toString().padStart(2, '0')}.${(createdDate.getMonth() + 1).toString().padStart(2, '0')}.${createdDate.getFullYear()} ${createdDate.getHours().toString().padStart(2, '0')}:${createdDate.getMinutes().toString().padStart(2, '0')}`
+        : '';
+      
+      return [
+        (index + 1).toString(), // Row number
+        formattedDate,
+        party.startTime || '',
+        party.endTime || '',
+        party.partyType || '',
+        party.kidName,
+        party.kidAge.toString(),
+        party.locationName, // This is now the "Address" field
+        party.phoneNumber || '',
+        (party.deposit || '').toString(),
+        (party.kidsCount || '').toString(),
+        (party.parentsCount || '').toString(),
+        party.kidsCatering || '',
+        party.parentsCatering || '',
+        party.notes || '',
+        formattedCreatedDate
+      ];
+    });
+
+    // Combine headers and rows
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => {
+        // Escape commas, quotes, and newlines in cell content
+        const escaped = cell.replace(/"/g, '""').replace(/\n/g, ' ');
+        return cell.includes(',') || cell.includes('"') || cell.includes('\n') ? `"${escaped}"` : escaped;
+      }).join(','))
+    ].join('\n');
+
+    // Create blob and download
+    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    const timestamp = new Date().toISOString().split('T')[0];
+    link.setAttribute('href', url);
+    link.setAttribute('download', `partita-${timestamp}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success(`Експортирани ${filteredAndSortedParties.length} партита`);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
@@ -176,6 +260,15 @@ export function AllPartiesPage() {
           <span className="hidden sm:inline">Назад към календара</span>
         </button>
         <h1 className="text-2xl font-bold text-gray-900 flex-1">Всички партита</h1>
+        <button
+          onClick={exportToCSV}
+          disabled={filteredAndSortedParties.length === 0}
+          className="flex items-center gap-2 h-10 px-4 rounded-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold text-sm shadow-md active:scale-95 transition-all focus-ring disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+          aria-label="Експортирай в CSV"
+        >
+          <Download className="h-5 w-5" />
+          <span className="hidden sm:inline">CSV</span>
+        </button>
         <span className="text-sm font-semibold text-gray-600 bg-gray-100 px-3 py-1.5 rounded-full">
           {filteredAndSortedParties.length} {filteredAndSortedParties.length === 1 ? 'парти' : 'партита'}
         </span>
@@ -354,10 +447,12 @@ export function AllPartiesPage() {
                       </div>
                     )}
 
-                    {/* Guests */}
-                    {(party.guestsCount !== undefined && party.guestsCount > 0) && (
+                    {/* Kids and Parents Count */}
+                    {((party.kidsCount !== undefined && party.kidsCount > 0) || (party.parentsCount !== undefined && party.parentsCount > 0)) && (
                       <div className="text-sm font-medium text-gray-600 mt-1">
-                        👥 {party.guestsCount} {party.guestsCount === 1 ? BG.guest : BG.guests}
+                        {party.kidsCount ? `� ${party.kidsCount} деца` : ''}
+                        {party.kidsCount && party.parentsCount ? ' • ' : ''}
+                        {party.parentsCount ? `👨 ${party.parentsCount} родители` : ''}
                       </div>
                     )}
                   </div>

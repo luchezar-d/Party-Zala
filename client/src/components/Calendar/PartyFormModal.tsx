@@ -19,6 +19,9 @@ interface Party {
   parentsCount?: number;
   kidsCatering?: string;
   parentsCatering?: string;
+  phoneNumber?: string;
+  deposit?: number;
+  partyType?: string;
 }
 
 interface PartyFormModalProps {
