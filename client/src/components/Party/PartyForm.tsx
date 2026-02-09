@@ -61,7 +61,7 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
       kidsCatering: editingParty.kidsCatering || '',
       parentsCatering: editingParty.parentsCatering || '',
       phoneNumber: editingParty.phoneNumber || '',
-      deposit: editingParty.deposit,
+      deposit: editingParty.deposit ?? 0,
       partyType: (editingParty.partyType || '') as '' | 'Външно парти' | 'Пейнтбол' | 'Детска зала',
     } : {
       partyDate: formatDateForAPI(date),
@@ -76,6 +76,7 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
       kidsCatering: '',
       parentsCatering: '',
       phoneNumber: '',
+      deposit: 0,
       partyType: '' as '',
     }
   });
@@ -98,7 +99,7 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
         kidsCatering: editingParty.kidsCatering || '',
         parentsCatering: editingParty.parentsCatering || '',
         phoneNumber: editingParty.phoneNumber || '',
-        deposit: editingParty.deposit,
+        deposit: editingParty.deposit ?? 0,
         partyType: (editingParty.partyType || '') as '' | 'Външно парти' | 'Пейнтбол' | 'Детска зала',
       });
     }
@@ -125,7 +126,7 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
         parentsCatering: data.parentsCatering || undefined,
         // phoneNumber is now required, so don't convert to undefined
         // Keep partyType value even if it's an empty string (valid option)
-        // deposit is already included via spread
+        // deposit is already converted to 0 if empty by the setValueAs function
       };
 
       console.log('Payload being sent:', payload);
@@ -276,12 +277,19 @@ export function PartyForm({ date, editingParty, onSuccess, onCancel }: PartyForm
                 Капаро (€)
               </label>
               <input
-                {...register('deposit', { valueAsNumber: true })}
+                {...register('deposit', {
+                  setValueAs: (value) => {
+                    // Convert empty string, null, undefined, or NaN to 0
+                    if (value === '' || value === null || value === undefined) return 0;
+                    const num = Number(value);
+                    return isNaN(num) ? 0 : num;
+                  }
+                })}
                 type="number"
                 min="0"
                 step="0.01"
                 className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-all duration-200 font-medium"
-                placeholder="100"
+                placeholder="0"
               />
               {errors.deposit && (
                 <p className="mt-1.5 text-sm text-red-600 font-medium">{errors.deposit.message}</p>

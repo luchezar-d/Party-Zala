@@ -299,16 +299,13 @@ export function AllPartiesPage() {
               </button>
 
               <button
-                onClick={() => {
-                  setShowDeleteConfirm({ type: 'all' });
-                  setShowDeleteDropdown(false);
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-all text-left"
+                disabled
+                className="w-full flex items-center gap-3 px-4 py-3 text-left opacity-50 cursor-not-allowed"
               >
-                <AlertTriangle className="h-4 w-4 text-red-600" />
+                <AlertTriangle className="h-4 w-4 text-gray-400" />
                 <div>
-                  <div className="font-semibold text-sm text-gray-900">ВСИЧКИ партита</div>
-                  <div className="text-xs text-gray-500">Изтрий абсолютно всички партита</div>
+                  <div className="font-semibold text-sm text-gray-400">ВСИЧКИ партита</div>
+                  <div className="text-xs text-gray-400">Изтрий абсолютно всички партита (деактивирано)</div>
                 </div>
               </button>
             </div>
@@ -426,18 +423,17 @@ export function AllPartiesPage() {
                 className="rounded-2xl bg-purple-100/80 text-purple-900 ring-1 ring-purple-200/50 border-opacity-20 shadow-md p-4 hover:shadow-lg transition-shadow"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    {/* Date */}
-                    <div className="flex items-center gap-2 text-sm font-semibold text-gray-600 mb-2">
+                  <div className="flex-1 min-w-0 space-y-1">
+                    {/* Date & Time */}
+                    <div className="flex items-center gap-2 text-sm font-semibold text-gray-600">
                       <Calendar className="h-4 w-4" />
                       {BG.formatDate(partyDate)}
-                      {party.startTime && (
-                        <span className="opacity-75">• {party.startTime}</span>
-                      )}
+                      <span className="opacity-75">• {party.startTime || '--:--'}</span>
+                      <span className="opacity-75">- {party.endTime || '--:--'}</span>
                     </div>
 
                     {/* Kid Name & Age */}
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">
+                    <h3 className="text-lg font-bold text-gray-900">
                       {party.kidName}
                       <span className="text-sm font-semibold opacity-75 ml-2">
                         ({party.kidAge} {BG.yearsOld})
@@ -447,25 +443,47 @@ export function AllPartiesPage() {
                     {/* Location */}
                     <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
                       <MapPin className="h-4 w-4" />
-                      {party.locationName}
+                      Адрес: {party.locationName}
+                    </div>
+
+                    {/* Party Type */}
+                    <div className="text-sm font-medium text-gray-600">
+                      🎊 Вид: {party.partyType || '-'}
                     </div>
 
                     {/* Parent */}
-                    {party.parentName && (
-                      <div className="flex items-center gap-2 text-sm font-medium text-gray-600 mt-1">
-                        <Baby className="h-4 w-4" />
-                        {party.parentName}
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2 text-sm font-medium text-gray-600">
+                      <Baby className="h-4 w-4" />
+                      Родител: {party.parentName || '-'}
+                    </div>
+
+                    {/* Phone Number */}
+                    <div className="text-sm font-medium text-gray-600">
+                      📞 Телефон: {party.phoneNumber || '-'}
+                    </div>
 
                     {/* Kids and Parents Count */}
-                    {((party.kidsCount !== undefined && party.kidsCount > 0) || (party.parentsCount !== undefined && party.parentsCount > 0)) && (
-                      <div className="text-sm font-medium text-gray-600 mt-1">
-                        {party.kidsCount ? `� ${party.kidsCount} деца` : ''}
-                        {party.kidsCount && party.parentsCount ? ' • ' : ''}
-                        {party.parentsCount ? `👨 ${party.parentsCount} родители` : ''}
-                      </div>
-                    )}
+                    <div className="text-sm font-medium text-gray-600">
+                      👶 Деца: {party.kidsCount || 0} • 👨 Родители: {party.parentsCount || 0}
+                    </div>
+
+                    {/* Catering */}
+                    <div className="text-sm font-medium text-gray-600">
+                      🍕 Кетъринг деца: {party.kidsCatering || '-'}
+                    </div>
+                    <div className="text-sm font-medium text-gray-600">
+                      🍽️ Кетъринг родители: {party.parentsCatering || '-'}
+                    </div>
+
+                    {/* Deposit */}
+                    <div className={`text-sm font-semibold ${party.deposit && party.deposit > 0 ? 'text-green-700' : 'text-gray-600'}`}>
+                      💰 Капаро: {party.deposit || 0}€
+                    </div>
+
+                    {/* Notes */}
+                    <div className={`text-sm font-medium ${party.notes ? 'text-gray-700 bg-white/50 p-2 rounded-lg mt-2' : 'text-gray-500'}`}>
+                      📝 Бележки: {party.notes || '-'}
+                    </div>
                   </div>
 
                   {/* Action Buttons */}

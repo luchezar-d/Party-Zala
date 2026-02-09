@@ -27,7 +27,15 @@ export const createPartySchema = z.object({
   
   // Contact and payment fields
   phoneNumber: z.string().min(1, 'Телефонният номер е задължителен').max(50, 'Телефонният номер не може да е повече от 50 символа'),
-  deposit: z.number().min(0, 'Капарото не може да е отрицателно').optional(),
+  deposit: z.preprocess(
+    (val) => {
+      // Handle undefined, null, NaN, or empty string -> default to 0
+      if (val === undefined || val === null || val === '') return 0;
+      const num = Number(val);
+      return isNaN(num) ? 0 : num;
+    },
+    z.number().min(0, 'Капарото не може да е отрицателно')
+  ),
   partyType: z.enum(['Външно парти', 'Пейнтбол', 'Детска зала', '']).optional()
 });
 

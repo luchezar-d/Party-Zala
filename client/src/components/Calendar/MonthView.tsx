@@ -73,15 +73,33 @@ export function MonthView({ currentDate, onPreviousMonth, onNextMonth, onToday, 
 
   const byDay = useMemo(() => groupByDay(parties), [parties]);
   
-  // Only show days that belong to the current month
-  const days = useMemo(
-    () => eachDayOfInterval({ start: monthStart, end: monthEnd }),
-    [monthStart.toISOString(), monthEnd.toISOString()]
-  );
-
-  // Calculate which day of week the month starts on (0 = Sunday, 1 = Monday, etc.)
-  // We use weekStartsOn: 1 (Monday), so we need to adjust
-  const firstDayOfWeek = (monthStart.getDay() + 6) % 7; // Convert to Monday-first (0 = Monday, 6 = Sunday)
+  // Calculate calendar grid days including previous/next month days for a complete grid
+  const days = useMemo(() => {
+    const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
+    
+    // Calculate which day of week the month starts on (0 = Monday, 6 = Sunday)
+    const firstDayOfWeek = (monthStart.getDay() + 6) % 7;
+    
+    // Add days from previous month to fill the first week
+    const previousMonthDays = [];
+    for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+      const prevDate = new Date(monthStart);
+      prevDate.setDate(prevDate.getDate() - (i + 1));
+      previousMonthDays.push(prevDate);
+    }
+    
+    // Add days from next month to complete the last week (optional)
+    const totalDays = previousMonthDays.length + daysInMonth.length;
+    const remainingDays = totalDays % 7 === 0 ? 0 : 7 - (totalDays % 7);
+    const nextMonthDays = [];
+    for (let i = 1; i <= remainingDays; i++) {
+      const nextDate = new Date(monthEnd);
+      nextDate.setDate(nextDate.getDate() + i);
+      nextMonthDays.push(nextDate);
+    }
+    
+    return [...previousMonthDays, ...daysInMonth, ...nextMonthDays];
+  }, [monthStart.toISOString(), monthEnd.toISOString()]);
 
   if (loading) {
     return (
@@ -137,12 +155,7 @@ export function MonthView({ currentDate, onPreviousMonth, onNextMonth, onToday, 
 
         {/* Days */}
         <div className="grid grid-cols-7 gap-4 p-8">
-          {/* Empty cells for days before the first day of the month */}
-          {Array.from({ length: firstDayOfWeek }).map((_, i) => (
-            <div key={`empty-${i}`} />
-          ))}
-          
-          {/* Actual days of the month */}
+          {/* All days including previous/next month days for complete grid */}
           {days.map((date) => (
             <DayCell
               key={date.toISOString()}
