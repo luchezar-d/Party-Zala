@@ -5,7 +5,7 @@ declare global {
     interface AuthUser {
       _id: Types.ObjectId | string;
       email: string;
-      role?: string;
+      role: 'admin' | 'viewer';
     }
     interface Request {
       user?: AuthUser;

@@ -49,7 +49,8 @@ export async function login(req: Request, res: Response) {
     const userData = {
       id: user._id,
       name: user.name,
-      email: user.email
+      email: user.email,
+      role: user.role
     };
 
     console.log('✅ Login successful:', { 
@@ -100,7 +101,8 @@ export async function me(req: Request, res: Response) {
     const userData = {
       id: user._id,
       name: user.name,
-      email: user.email
+      email: user.email,
+      role: user.role
     };
 
     console.log('✅ /auth/me successful:', { userId: user._id, email: user.email });

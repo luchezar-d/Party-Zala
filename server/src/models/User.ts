@@ -4,6 +4,7 @@ export interface IUser extends Document {
   email: string;
   name: string;
   passwordHash: string;
+  role: 'admin' | 'viewer';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -27,6 +28,11 @@ const userSchema = new Schema<IUser>({
     type: String,
     required: true,
     select: false // Don't include in queries by default
+  },
+  role: {
+    type: String,
+    enum: ['admin', 'viewer'],
+    default: 'viewer'
   }
 }, {
   timestamps: true,

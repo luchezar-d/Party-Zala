@@ -8,28 +8,23 @@ import {
   deleteAllParties,
   deletePartiesInRange
 } from '../controllers/partyController.js';
-import { authenticate } from '../middleware/auth.js';
+import { authenticate, requireAdmin } from '../middleware/auth.js';
 import { validateCreateParty, validateUpdateParty, validateListParties } from '../validators/party.js';
 
 const router = Router();
 
-// MVP: Auth disabled for internal use (3-5 users)
-// TODO: Re-enable auth for production with external users
-// router.use(authenticate);
+// All party routes require authentication
+router.use(authenticate);
 
-// GET routes
-router.get('/', validateListParties, listPartiesInRange); // With date range
-router.get('/all', listAllParties); // All parties, no date restriction
+// GET routes — all authenticated users can read
+router.get('/', validateListParties, listPartiesInRange);
+router.get('/all', listAllParties);
 
-// POST routes
-router.post('/', validateCreateParty, createParty);
-
-// PUT routes
-router.put('/:id', validateUpdateParty, updateParty);
-
-// DELETE routes
-router.delete('/all', deleteAllParties); // Delete all parties
-router.delete('/range', deletePartiesInRange); // Delete parties in date range
-router.delete('/:id', deleteParty); // Delete single party
+// Write routes — admin only
+router.post('/', requireAdmin, validateCreateParty, createParty);
+router.put('/:id', requireAdmin, validateUpdateParty, updateParty);
+router.delete('/all', requireAdmin, deleteAllParties);
+router.delete('/range', requireAdmin, deletePartiesInRange);
+router.delete('/:id', requireAdmin, deleteParty);
 
 export default router;
