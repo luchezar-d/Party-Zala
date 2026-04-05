@@ -160,13 +160,30 @@ export async function deleteParty(req: Request, res: Response) {
   }
 }
 
-// Get ALL parties without date restrictions
+// Get ALL parties with pagination, most recent first
 export async function listAllParties(req: Request, res: Response) {
   try {
-    const parties = await Party.find({})
-      .sort({ partyDate: 1, startTime: 1 });
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = 20;
+    const skip = (page - 1) * limit;
 
-    res.json(parties);
+    const [parties, total] = await Promise.all([
+      Party.find({})
+        .sort({ partyDate: -1, startTime: -1 })
+        .skip(skip)
+        .limit(limit),
+      Party.countDocuments({})
+    ]);
+
+    res.json({
+      parties,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    });
   } catch (error) {
     console.error('List all parties error:', error);
     res.status(500).json({ message: 'Internal server error' });

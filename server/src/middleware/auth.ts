@@ -47,7 +47,8 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
 
     req.user = {
       _id: (user._id as any).toString(),
-      email: user.email
+      email: user.email,
+      role: user.role
     };
     
     console.log('✅ Auth successful:', { userId: user._id, email: user.email });
@@ -60,4 +61,14 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
     console.error('❌ Auth error:', error);
     return res.status(500).json({ message: 'Internal server error' });
   }
+}
+
+export function requireAdmin(req: Request, res: Response, next: NextFunction) {
+  if (!req.user) {
+    return res.status(401).json({ message: 'Authentication required' });
+  }
+  if ((req.user as any).role !== 'admin') {
+    return res.status(403).json({ message: 'Нямате права за това действие' });
+  }
+  next();
 }

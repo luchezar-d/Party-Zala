@@ -2,6 +2,7 @@ import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { Menu as MenuIcon, X, LogOut, Calendar, List } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuthStore } from '../../store/auth';
 
 interface MobileMenuProps {
   onLogout: () => void;
@@ -9,6 +10,7 @@ interface MobileMenuProps {
 
 export default function MobileMenu({ onLogout }: MobileMenuProps) {
   const location = useLocation();
+  const user = useAuthStore((s) => s.user);
   
   return (
     <Menu as="div" className="relative">
@@ -32,6 +34,20 @@ export default function MobileMenu({ onLogout }: MobileMenuProps) {
             leaveTo="transform opacity-0 scale-95"
           >
             <Menu.Items className="absolute right-0 mt-2 w-64 origin-top-right rounded-2xl bg-white shadow-xl ring-1 ring-black/5 focus:outline-none overflow-hidden">
+              {/* User Info */}
+              {user && (
+                <div className={`px-4 py-3 border-b border-gray-100 ${
+                  user.role === 'admin' ? 'bg-pink-50' : 'bg-sky-50'
+                }`}>
+                  <div className="flex items-center gap-2">
+                    <span className={`h-2 w-2 rounded-full ${user.role === 'admin' ? 'bg-pink-500' : 'bg-sky-500'}`} />
+                    <span className="text-sm font-bold text-gray-900">{user.name}</span>
+                  </div>
+                  <div className={`text-xs font-semibold mt-0.5 ml-4 ${user.role === 'admin' ? 'text-pink-600' : 'text-sky-600'}`}>
+                    {user.role === 'admin' ? 'Администратор' : 'Служител'}
+                  </div>
+                </div>
+              )}
               {/* Menu Items */}
               <div className="py-2">
                 <Menu.Item>

@@ -1,14 +1,22 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
+import { useEffect } from 'react';
 import { Home } from './pages/Home'; // Login page
 import { CalendarPage } from './pages/CalendarPage';
 import { AllPartiesPage } from './pages/AllPartiesPage';
 import { AuthGate } from './components/AuthGate';
 import { useMobileViewport } from './hooks/useMobileViewport';
+import { useAuthStore } from './store/auth';
 
 function App() {
   // Fix 100vh on iOS
   useMobileViewport();
+  const hydrate = useAuthStore((s) => s.hydrate);
+
+  // On mount, restore user session from JWT cookie so role is available
+  useEffect(() => {
+    hydrate();
+  }, [hydrate]);
   
   return (
     <Router>

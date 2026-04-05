@@ -5,22 +5,26 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  role: 'admin' | 'viewer';
 }
 
 interface AuthState {
   user: User | null;
   loading: boolean;
   error: string | null;
+  isAdmin: () => boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   hydrate: () => Promise<void>;
   clearError: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   loading: false,
   error: null,
+
+  isAdmin: () => get().user?.role === 'admin',
 
   login: async (email: string, password: string) => {
     console.log('🔐 Auth Store: Starting login...', { email });
