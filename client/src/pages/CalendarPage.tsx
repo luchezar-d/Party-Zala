@@ -3,8 +3,10 @@ import { simpleAuth } from '../lib/simpleAuth';
 import CalendarResponsive from '../components/Calendar/CalendarResponsive';
 import MobileMenu from '../components/ui/MobileMenu';
 import { BG } from '../lib/i18n';
+import { useAuthStore } from '../store/auth';
 
 export function CalendarPage() {
+  const user = useAuthStore((s) => s.user);
   const handleLogout = () => {
     simpleAuth.setLoggedOut();
     toast.success('Излязохте успешно');
@@ -33,6 +35,16 @@ export function CalendarPage() {
               <h1 className="text-base sm:text-xl font-bold bg-gradient-to-r from-sky-600 to-pink-600 bg-clip-text text-transparent whitespace-nowrap">
                 {BG.appTitle}
               </h1>
+              {user && (
+                <span className={`hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${
+                  user.role === 'admin'
+                    ? 'bg-pink-100 text-pink-700 ring-1 ring-pink-200'
+                    : 'bg-sky-100 text-sky-700 ring-1 ring-sky-200'
+                }`}>
+                  <span className="h-1.5 w-1.5 rounded-full bg-current" />
+                  {user.name} · {user.role === 'admin' ? 'Администратор' : 'Служител'}
+                </span>
+              )}
             </div>
             
             {/* Right - Menu/Actions */}

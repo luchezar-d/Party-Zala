@@ -15,7 +15,8 @@ interface DaySheetProps {
 }
 
 export function DaySheet({ open, onOpenChange, date, items = [], onPartyUpdated }: DaySheetProps) {
-  const isAdmin = useAuthStore((s) => s.isAdmin());
+  const user = useAuthStore((s) => s.user);
+  const isAdmin = user?.role === 'admin';
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingParty, setEditingParty] = useState<Party | null>(null);
 

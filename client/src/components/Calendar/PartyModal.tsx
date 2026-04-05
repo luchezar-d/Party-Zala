@@ -36,7 +36,8 @@ interface PartyModalProps {
 
 
 export function PartyModal({ date, parties, onClose, onPartyCreated, onPartyDeleted }: PartyModalProps) {
-  const isAdmin = useAuthStore((s) => s.isAdmin());
+  const user = useAuthStore((s) => s.user);
+  const isAdmin = user?.role === 'admin';
   const [showFormModal, setShowFormModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [editingParty, setEditingParty] = useState<Party | null>(null);

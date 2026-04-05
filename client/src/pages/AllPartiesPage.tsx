@@ -19,7 +19,8 @@ interface PaginationMeta {
 
 export function AllPartiesPage() {
   const navigate = useNavigate();
-  const { isAdmin } = useAuthStore();
+  const user = useAuthStore((s) => s.user);
+  const isAdmin = user?.role === 'admin';
   const [parties, setParties] = useState<Party[]>([]);
   const [pagination, setPagination] = useState<PaginationMeta>({ page: 1, limit: PAGE_SIZE, total: 0, totalPages: 1 });
   const [loading, setLoading] = useState(true);
@@ -260,7 +261,7 @@ export function AllPartiesPage() {
       {/* Search and Filters */}
       <div className="space-y-3">
         {/* Bulk Delete Dropdown — admin only */}
-        {isAdmin() && (
+        {isAdmin && (
           <div className="relative">
             <button
               onClick={() => setShowDeleteDropdown(!showDeleteDropdown)}
@@ -400,7 +401,7 @@ export function AllPartiesPage() {
                   </div>
 
                   {/* Action Buttons — admin only */}
-                  {isAdmin() && (
+                  {isAdmin && (
                     <div className="flex items-center gap-1 flex-shrink-0">
                       <button
                         onClick={() => handleEditParty(party)}
