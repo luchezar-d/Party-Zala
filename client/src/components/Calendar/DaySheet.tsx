@@ -4,6 +4,7 @@ import type { Party } from "./MonthView";
 import { PartyFormModal } from "./PartyFormModal";
 import { BG } from "../../lib/i18n";
 import BottomSheet from "../ui/BottomSheet";
+import { useAuthStore } from "../../store/auth";
 
 interface DaySheetProps {
   open: boolean;
@@ -14,6 +15,7 @@ interface DaySheetProps {
 }
 
 export function DaySheet({ open, onOpenChange, date, items = [], onPartyUpdated }: DaySheetProps) {
+  const isAdmin = useAuthStore((s) => s.isAdmin());
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingParty, setEditingParty] = useState<Party | null>(null);
 
@@ -86,13 +88,15 @@ export function DaySheet({ open, onOpenChange, date, items = [], onPartyUpdated 
                         </div>
                       </div>
                     </div>
-                    <button
-                      onClick={() => handleEditParty(party)}
-                      className="h-11 w-11 -mr-2 rounded-full hover:bg-white/60 active:scale-95 transition-all flex items-center justify-center focus-ring"
-                      aria-label={`${BG.edit} ${party.kidName}`}
-                    >
-                      <Edit className="h-5 w-5 text-blue-600" />
-                    </button>
+                    {isAdmin && (
+                      <button
+                        onClick={() => handleEditParty(party)}
+                        className="h-11 w-11 -mr-2 rounded-full hover:bg-white/60 active:scale-95 transition-all flex items-center justify-center focus-ring"
+                        aria-label={`${BG.edit} ${party.kidName}`}
+                      >
+                        <Edit className="h-5 w-5 text-blue-600" />
+                      </button>
+                    )}
                   </li>
                 );
               })}
@@ -110,16 +114,18 @@ export function DaySheet({ open, onOpenChange, date, items = [], onPartyUpdated 
         )}
 
         {/* Divider */}
-        {items.length > 0 && <div className="my-6 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent" />}
+        {items.length > 0 && isAdmin && <div className="my-6 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent" />}
 
-        {/* Add Party Button */}
-        <button
-          onClick={handleAddNewParty}
-          className="w-full flex items-center justify-center gap-2.5 h-14 sm:h-14 border-2 border-dashed border-gray-300 rounded-2xl text-gray-700 hover:border-sky-500 hover:text-sky-700 hover:bg-sky-50/80 active:scale-[0.98] transition-all font-semibold focus-ring shadow-sm"
-        >
-          <Plus className="h-5 w-5" />
-          <span>{BG.addNewParty}</span>
-        </button>
+        {/* Add Party Button — admin only */}
+        {isAdmin && (
+          <button
+            onClick={handleAddNewParty}
+            className="w-full flex items-center justify-center gap-2.5 h-14 sm:h-14 border-2 border-dashed border-gray-300 rounded-2xl text-gray-700 hover:border-sky-500 hover:text-sky-700 hover:bg-sky-50/80 active:scale-[0.98] transition-all font-semibold focus-ring shadow-sm"
+          >
+            <Plus className="h-5 w-5" />
+            <span>{BG.addNewParty}</span>
+          </button>
+        )}
       </BottomSheet>
 
       {/* Party Form Modal */}

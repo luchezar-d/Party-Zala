@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { BG } from '../../lib/i18n';
 import { PartyFormModal } from './PartyFormModal';
 import { PartyDetailsModal } from './PartyDetailsModal';
+import { useAuthStore } from '../../store/auth';
 
 interface Party {
   _id: string;
@@ -35,6 +36,7 @@ interface PartyModalProps {
 
 
 export function PartyModal({ date, parties, onClose, onPartyCreated, onPartyDeleted }: PartyModalProps) {
+  const isAdmin = useAuthStore((s) => s.isAdmin());
   const [showFormModal, setShowFormModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [editingParty, setEditingParty] = useState<Party | null>(null);
@@ -162,25 +164,29 @@ export function PartyModal({ date, parties, onClose, onPartyCreated, onPartyDele
                         >
                           <Eye className="h-4 w-4" />
                         </button>
-                        <button
-                          onClick={() => handleEditParty(party)}
-                          className="p-2 text-blue-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          title="Редактиране"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(party._id)}
-                          disabled={deleting === party._id}
-                          className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
-                          title="Изтриване"
-                        >
-                          {deleting === party._id ? (
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600"></div>
-                          ) : (
-                            <Trash2 className="h-4 w-4" />
-                          )}
-                        </button>
+                        {isAdmin && (
+                          <>
+                            <button
+                              onClick={() => handleEditParty(party)}
+                              className="p-2 text-blue-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                              title="Редактиране"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(party._id)}
+                              disabled={deleting === party._id}
+                              className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                              title="Изтриване"
+                            >
+                              {deleting === party._id ? (
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600"></div>
+                              ) : (
+                                <Trash2 className="h-4 w-4" />
+                              )}
+                            </button>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -190,14 +196,16 @@ export function PartyModal({ date, parties, onClose, onPartyCreated, onPartyDele
             </div>
           )}
 
-          {/* Add New Party Button */}
-          <button
-            onClick={handleAddNewParty}
-            className="w-full flex items-center justify-center space-x-2 p-3 border-2 border-dashed border-primary-300 text-primary-600 hover:border-primary-400 hover:text-primary-700 rounded-lg transition-colors"
-          >
-            <Plus className="h-4 w-4" />
-            <span className="font-medium">{BG.addNewParty}</span>
-          </button>
+          {/* Add New Party Button — admin only */}
+          {isAdmin && (
+            <button
+              onClick={handleAddNewParty}
+              className="w-full flex items-center justify-center space-x-2 p-3 border-2 border-dashed border-primary-300 text-primary-600 hover:border-primary-400 hover:text-primary-700 rounded-lg transition-colors"
+            >
+              <Plus className="h-4 w-4" />
+              <span className="font-medium">{BG.addNewParty}</span>
+            </button>
+          )}
         </div>
       </div>
 
