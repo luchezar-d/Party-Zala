@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../lib/api';
 import { simpleAuth } from '../lib/simpleAuth';
+import { useAuthStore } from '../store/auth';
 import { Calendar, Mail, Lock, AlertCircle } from 'lucide-react';
 
 const loginSchema = z.object({
@@ -16,6 +16,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
   const navigate = useNavigate();
+  const storeLogin = useAuthStore((s) => s.login);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -33,14 +34,10 @@ export function LoginForm() {
       setLoading(true);
       setError(null);
       
-      // Simple auth: just call the login endpoint
-      // Server validates credentials, we just mark as logged in
-      await api.post('/auth/login', { 
-        email: data.email, 
-        password: data.password 
-      });
+      // Use the store's login action so the user+role is saved to Zustand state
+      await storeLogin(data.email, data.password);
       
-      // If successful, mark as logged in and redirect
+      // Also mark as logged in for the simple session flag
       simpleAuth.setLoggedIn();
       navigate('/calendar');
     } catch (err: any) {
