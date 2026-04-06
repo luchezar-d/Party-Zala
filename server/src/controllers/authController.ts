@@ -40,12 +40,12 @@ export async function login(req: Request, res: Response) {
       cookieName: 'party_zala_token',
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'none',
       path: '/',
       maxAge: '7 days'
     });
 
-    // Return user data (without password)
+    // Return user data (without password) AND the token so clients can use Bearer auth
     const userData = {
       id: user._id,
       name: user.name,
@@ -59,7 +59,8 @@ export async function login(req: Request, res: Response) {
       responseHeaders: Object.keys(res.getHeaders())
     });
 
-    res.json({ user: userData });
+    // Return token in body so cross-origin clients can use Authorization header
+    res.json({ user: userData, token });
   } catch (error) {
     console.error('❌ Login error:', error);
     res.status(500).json({ message: 'Internal server error' });

@@ -20,13 +20,19 @@ export async function authenticate(req: Request, res: Response, next: NextFuncti
       allCookies: req.cookies,
       cookieCount: Object.keys(req.cookies || {}).length,
       origin: req.headers.origin,
-      hasToken: !!req.cookies[config.COOKIE_NAME]
+      hasToken: !!req.cookies[config.COOKIE_NAME],
+      hasAuthHeader: !!req.headers.authorization
     });
 
-    const token = req.cookies[config.COOKIE_NAME];
+    // Support both cookie and Authorization: Bearer <token> header
+    let token = req.cookies[config.COOKIE_NAME];
+    if (!token && req.headers.authorization?.startsWith('Bearer ')) {
+      token = req.headers.authorization.slice(7);
+      console.log('🔑 Using Bearer token from Authorization header');
+    }
 
     if (!token) {
-      console.log('❌ Auth failed: No token in cookies');
+      console.log('❌ Auth failed: No token in cookies or Authorization header');
       return res.status(401).json({ message: 'Authentication required' });
     }
 

@@ -8,6 +8,20 @@ export interface User {
   role: 'admin' | 'viewer';
 }
 
+const TOKEN_KEY = 'party_zala_token';
+
+export function getStoredToken(): string | null {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+function saveToken(token: string) {
+  localStorage.setItem(TOKEN_KEY, token);
+}
+
+function clearToken() {
+  localStorage.removeItem(TOKEN_KEY);
+}
+
 interface AuthState {
   user: User | null;
   loading: boolean;
@@ -34,24 +48,21 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       console.log('📤 Auth Store: Sending login request...');
       const response = await api.post('/auth/login', { email, password });
       console.log('✅ Auth Store: Login response:', response.data);
-      console.log('🍪 Auth Store: Response headers:', {
-        'set-cookie': response.headers['set-cookie'],
-        'access-control-allow-credentials': response.headers['access-control-allow-credentials'],
-        'access-control-allow-origin': response.headers['access-control-allow-origin'],
-        all: response.headers
-      });
       
-      const { user } = response.data;
+      const { user, token } = response.data;
+      
+      // Store token in localStorage for cross-origin Bearer auth
+      if (token) {
+        saveToken(token);
+        console.log('💾 Auth Store: Token saved to localStorage');
+      }
       
       set({ user, loading: false });
       console.log('✅ Auth Store: User set in state:', user);
-      console.log('🍪 Auth Store: Document cookies after login:', document.cookie);
     } catch (error: any) {
       console.error('❌ Auth Store: Login failed:', {
         status: error.response?.status,
-        statusText: error.response?.statusText,
         data: error.response?.data,
-        headers: error.response?.headers
       });
       const errorMessage = error.response?.data?.message || 'Login failed';
       set({ error: errorMessage, loading: false });
@@ -64,17 +75,24 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     
     try {
       await api.post('/auth/logout');
-      set({ user: null, loading: false });
     } catch (error) {
-      // Even if logout fails on server, clear local state
+      // Ignore server errors on logout
+    } finally {
+      clearToken();
       set({ user: null, loading: false });
     }
   },
 
   hydrate: async () => {
     console.log('💧 Auth Store: Hydrating auth state...');
-    console.log('🍪 Document cookies:', document.cookie);
     set({ loading: true });
+    
+    // If no token stored, skip the network call entirely
+    if (!getStoredToken()) {
+      console.log('ℹ️  Auth Store: No stored token, skipping hydration');
+      set({ user: null, loading: false });
+      return;
+    }
     
     try {
       console.log('📤 Auth Store: Sending /auth/me request...');
@@ -87,10 +105,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     } catch (error: any) {
       console.log('ℹ️  Auth Store: Not authenticated', {
         status: error.response?.status,
-        statusText: error.response?.statusText,
         data: error.response?.data
       });
-      // User not authenticated, clear state
+      // Token is invalid/expired — clear it
+      clearToken();
       set({ user: null, loading: false });
     }
   },

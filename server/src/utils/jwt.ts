@@ -12,12 +12,13 @@ export function generateToken(userId: string): string {
 export function setTokenCookie(res: Response, token: string): void {
   const isProduction = config.NODE_ENV === 'production';
   
-  // Use 'lax' sameSite since client and server are on same domain
-  // This works better with iOS/Safari which blocks 'none' cookies more aggressively
+  // Use 'none' + secure in production for cross-origin (Railway client/server on different subdomains)
+  // Use 'lax' in development (same-origin localhost)
+  const sameSite = isProduction ? 'none' : 'lax';
   res.cookie(config.COOKIE_NAME, token, {
     httpOnly: true,
-    secure: isProduction, // Only HTTPS in production
-    sameSite: 'lax', // 'lax' works for same-origin and is more compatible with iOS/Safari
+    secure: isProduction, // 'none' requires secure:true
+    sameSite,
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     path: '/'
   });
@@ -26,7 +27,7 @@ export function setTokenCookie(res: Response, token: string): void {
     name: config.COOKIE_NAME,
     httpOnly: true,
     secure: isProduction,
-    sameSite: 'lax',
+    sameSite,
     maxAge: '7 days',
     path: '/'
   });
@@ -38,7 +39,7 @@ export function clearTokenCookie(res: Response): void {
   res.clearCookie(config.COOKIE_NAME, {
     httpOnly: true,
     secure: isProduction,
-    sameSite: 'lax',
+    sameSite: isProduction ? 'none' : 'lax',
     path: '/'
   });
   
