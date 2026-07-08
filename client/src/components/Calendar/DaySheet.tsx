@@ -1,7 +1,8 @@
-import { Plus, Edit } from "lucide-react";
+import { Plus, Edit, Eye } from "lucide-react";
 import { useState } from "react";
 import type { Party } from "./MonthView";
 import { PartyFormModal } from "./PartyFormModal";
+import { PartyDetailsModal } from "./PartyDetailsModal";
 import { BG } from "../../lib/i18n";
 import BottomSheet from "../ui/BottomSheet";
 import { useAuthStore } from "../../store/auth";
@@ -19,12 +20,19 @@ export function DaySheet({ open, onOpenChange, date, items = [], onPartyUpdated 
   const isAdmin = user?.role === 'admin';
   const [showFormModal, setShowFormModal] = useState(false);
   const [editingParty, setEditingParty] = useState<Party | null>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedParty, setSelectedParty] = useState<Party | null>(null);
 
   if (!date) return null;
 
   const handleAddNewParty = () => {
     setEditingParty(null);
     setShowFormModal(true);
+  };
+
+  const handleViewDetails = (party: Party) => {
+    setSelectedParty(party);
+    setShowDetailsModal(true);
   };
 
   const handleEditParty = (party: Party) => {
@@ -89,15 +97,24 @@ export function DaySheet({ open, onOpenChange, date, items = [], onPartyUpdated 
                         </div>
                       </div>
                     </div>
-                    {isAdmin && (
+                    <div className="flex items-center gap-1 -mr-2">
                       <button
-                        onClick={() => handleEditParty(party)}
-                        className="h-11 w-11 -mr-2 rounded-full hover:bg-white/60 active:scale-95 transition-all flex items-center justify-center focus-ring"
-                        aria-label={`${BG.edit} ${party.kidName}`}
+                        onClick={() => handleViewDetails(party)}
+                        className="h-11 w-11 rounded-full hover:bg-green-50 active:scale-95 transition-all flex items-center justify-center focus-ring"
+                        aria-label={`Детайли ${party.kidName}`}
                       >
-                        <Edit className="h-5 w-5 text-blue-600" />
+                        <Eye className="h-5 w-5 text-green-600" />
                       </button>
-                    )}
+                      {isAdmin && (
+                        <button
+                          onClick={() => handleEditParty(party)}
+                          className="h-11 w-11 rounded-full hover:bg-white/60 active:scale-95 transition-all flex items-center justify-center focus-ring"
+                          aria-label={`${BG.edit} ${party.kidName}`}
+                        >
+                          <Edit className="h-5 w-5 text-blue-600" />
+                        </button>
+                      )}
+                    </div>
                   </li>
                 );
               })}
@@ -136,6 +153,14 @@ export function DaySheet({ open, onOpenChange, date, items = [], onPartyUpdated 
         onSuccess={handleFormSuccess}
         date={date}
         editingParty={editingParty}
+      />
+
+      {/* Party Details Modal */}
+      <PartyDetailsModal
+        isOpen={showDetailsModal}
+        onClose={() => setShowDetailsModal(false)}
+        party={selectedParty}
+        date={date}
       />
     </>
   );

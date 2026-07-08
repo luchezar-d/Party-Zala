@@ -1,3 +1,4 @@
+import { Dialog } from '@headlessui/react';
 import { X, Calendar, Clock, Users, Baby, ChefHat, User } from 'lucide-react';
 import { BG } from '../../lib/i18n';
 
@@ -31,7 +32,7 @@ interface PartyDetailsModalProps {
 }
 
 export function PartyDetailsModal({ isOpen, onClose, party, date }: PartyDetailsModalProps) {
-  if (!isOpen || !party) return null;
+  if (!party) return null;
 
   const formatTime = (time: string) => {
     const [hours, minutes] = time.split(':');
@@ -39,15 +40,20 @@ export function PartyDetailsModal({ isOpen, onClose, party, date }: PartyDetails
   };
 
   return (
-    <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
-      <div className="relative bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-md max-h-[85vh] overflow-y-auto">
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors z-10"
-        >
-          <X className="h-5 w-5" />
-        </button>
+    <Dialog open={isOpen} onClose={onClose} className="relative z-[80]">
+      {/* Backdrop */}
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm" aria-hidden="true" />
+
+      {/* Panel */}
+      <div className="fixed inset-0 flex items-center justify-center p-4">
+        <Dialog.Panel className="relative bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-md max-h-[85vh] overflow-y-auto">
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className="absolute top-3 right-3 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors z-10"
+          >
+            <X className="h-5 w-5" />
+          </button>
 
         {/* Content */}
         <div className="p-4">
@@ -261,7 +267,8 @@ export function PartyDetailsModal({ isOpen, onClose, party, date }: PartyDetails
             </div>
           </div>
         </div>
+        </Dialog.Panel>
       </div>
-    </div>
+    </Dialog>
   );
 }
