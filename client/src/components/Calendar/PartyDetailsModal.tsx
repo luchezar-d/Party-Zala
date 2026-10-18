@@ -1,5 +1,5 @@
 import { Dialog } from '@headlessui/react';
-import { X, Calendar, Clock, Users, Baby, ChefHat, User } from 'lucide-react';
+import { X, Calendar, Clock, Users, Baby, ChefHat, User, FileText } from 'lucide-react';
 import { BG } from '../../lib/i18n';
 
 interface Party {
@@ -249,6 +249,20 @@ export function PartyDetailsModal({ isOpen, onClose, party, date }: PartyDetails
                       <p className="text-sm text-gray-900 whitespace-pre-wrap">{party.parentsCatering}</p>
                     </div>
                   )}
+                </div>
+              </div>
+            )}
+
+            {/* Notes Section */}
+            {party.notes && (
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+                  <FileText className="h-4 w-4" />
+                  <span>Бележки</span>
+                </div>
+
+                <div className="pl-6">
+                  <p className="text-sm text-gray-900 whitespace-pre-wrap bg-gray-50 rounded-lg p-3">{party.notes}</p>
                 </div>
               </div>
             )}
